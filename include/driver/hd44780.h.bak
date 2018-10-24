@@ -1,0 +1,88 @@
+/*
+ * hd44780.h
+ *
+ *  Created on: 8 лют. 2017 р.
+ *      Author: Kitaro
+ */
+
+#ifndef INCLUDE_DRIVER_HD44780_H_
+#define INCLUDE_DRIVER_HD44780_H_
+
+#include "user_config.h"
+#include "ets_sys.h"
+#include "osapi.h"
+
+#define i2c_LCD_Columns 20
+#define i2c_LCD_Rows 4
+
+uint8 i2c_LCD_CBF; 				// Флаги кольцевого буфера,
+uint8 i2c_LCD_Init_State;			// на етапі ініціалізації ЖКІ - номер етапа ініціалізації.
+
+#define i2c_LCD_CBF_Start 7		// Если 1 - передача данных в ЖКИ активна
+#define i2c_LCD_CBF_Empty 6		// Флаг - буфер пуст, i2c_LCD_CBRP=i2c_LCD_CBWP
+#define i2c_LCD_CBF_Full 5		// Флаг - буфер полон, i2c_LCD_CBRP=i2c_LCD_CBWP, ошибка
+#define i2c_LCD_Initialized 4
+
+
+#define i2c_LCD_CBL 150		// Длина кольцевого буфера - розмір екрану + якись зазор.
+uint8 i2c_LCD_CBD[i2c_LCD_CBL];
+uint8 i2c_LCD_CBRP;				// Переменная, содержащая маркер чтения из кольцевого буфера, передачи на ЖКИ, указывает на !!_следующую_!! ячейку
+uint8 i2c_LCD_CBWP;				// Переменная, содержащая маркер записи в кольцевой буфер
+
+#define i2c_LCD_CBComm 0x0F		// Константа, указывающая, что следующий байт в буфере - комманда
+#define i2c_LCD_CBData 0x1F		// Константа, указывающая, что следующий байт в буфере - данные
+
+// Маркер чтения и записи совпадает. Для старта маркер записи равен +1 от маркера чтения
+// Но первый байт в буфере не содержит при этом информации и должен быть пропущен.
+uint8 i2c_LCD_CBExch;				// Вспомогательная переменная для обмена данными между процедурами
+uint8 i2c_LCD_CBData_Out;			// Переменная для вывода в порт
+//uint8 i2c_LCD_CB_CGRAM_Counter;    // Счетчик для процедуры записи символов в ЖКИ
+
+//#define i2c_LCD_CB_CGRAM_Count 4		// Кол-во символов, которое надо пихнуть в ЖКИ
+
+
+
+// Определения и константы
+
+
+#define i2c_LCD_RS 0
+#define i2c_LCD_RW 1
+#define i2c_LCD_E 2
+#define i2c_LCD_Light 3
+#define i2c_LCD_Data_Mask 0b00001111	//	Маска для затирання даних, дані там де "0"
+#define i2c_LCD_Port_Offset 4	// двиг по порту от младшего бита, если сигнальные линии наинаются с младшего бита - равно 0
+
+
+
+
+char i2c_LCD_Code_converter(char buffer);	//	Перетворює коди кирилиці в коди, прийнятні для індікатора.
+void i2c_POP_LCD_CB(void);					//	Читання з КБ, направлення даних в процедуру вивода на екран.
+void i2c_LCD_Code_display(uint8 row, uint8 col, char buffer);	//Тестова процедуре - переводить символ в його код, вхідні дані - знакомісце, де виводити результат, символ
+void i2c_LCD_Write_Task (void);		//	Таймерна процедура, основа для RTOS, перевіряє наявність даних в КБ, готових для видачі в індикатор, встановлює сама себе далі на викоонання
+
+//====================================================================================================
+#define i2c_LCD_Write_Task_Idle	100			//	Константи для таймерної процедури, час постановки завдання, коли КБ порожній
+#define i2c_LCD_Write_Task_Work 5			//	Час постановки нового завдання, коли в КБ є дані.
+//====================================================================================================
+
+void i2c_LCD_init(void);				//	Процедура ініціалізації індікатора.
+//====================================================================================================
+#define i2c_LCD_init_Preinit 300			//	Затримка перед початком ініціалізації
+#define i2c_LCD_init_Delay 50				//	Затримка між етапами ініціалізації
+//====================================================================================================
+
+void i2c_LCD_Send_String(uint8 row, uint8 col, char str_out[]);
+#define i2c_LCD_Send_String_FirstRow	0				//	Адреси з яких в пам`яті починаються рядки.
+#define i2c_LCD_Send_String_SecondRow	0x40
+#define i2c_LCD_Send_String_ThirdRow	0x14
+#define i2c_LCD_Send_String_FourthRow	0x54
+#define i2c_LCD_Send_String_Set_DDRAM_Address	0x80	//	Біт який вказує, що в пакеті даних йде адреса в пам`яті, куди писати
+
+uint8 i2c_LCD_light_control;
+
+
+os_timer_t hd44780_timer;
+
+
+
+#endif /* INCLUDE_DRIVER_HD44780_H_ */

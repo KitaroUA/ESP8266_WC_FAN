@@ -1,0 +1,1 @@
+function slider2(id) {if (document.getElementById(id).checked) {document.getElementById("checked2").submit();} else {document.getElementById("unchecked2").submit();}}
