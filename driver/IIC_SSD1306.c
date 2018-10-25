@@ -344,11 +344,13 @@ void ICACHE_FLASH_ATTR i2c_SSD1306_Init(void)
 
 					buff[i++] = 0x80;
 //					buff[i++] = 0x40;
-					buff[i++] = 0xA1;
+//					buff[i++] = 0xA1; // no mirror X
+					buff[i++] = 0xA0; // mirror X
 
 					buff[i++] = 0x80;
 //					buff[i++] = 0x81;
-					buff[i++] = 0xC8;
+//					buff[i++] = 0xC8; // no mirror Y
+					buff[i++] = 0xC0; // mirror Y
 
 					buff[i++] = 0x80;
 //					buff[i++] = 0xcf;

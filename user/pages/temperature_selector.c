@@ -129,7 +129,7 @@ INFO("\r\n\r\n");
 		mFlag.Temperature_selector_array[temperature_options_current].upper_dimmer_value = atoi (pch);
 		INFO(pch);
 		INFO("\r\n\r\n");
-		my_flash_var_write();
+		AddCFG_Save();
 
 //		i2c_PCF8574_Write(0x4c,currLedState,1);
 

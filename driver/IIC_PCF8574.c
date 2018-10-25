@@ -10,6 +10,7 @@
 #define HI(X) (X>>8)
 #define LO(X) (X & 0xFF)
 
+uint8 i2c_PCF8574_enabled;
 
 uint8 i2c_PCF8574_buffer[i2c_PCF8574_buffer_lenght];
 
@@ -86,6 +87,8 @@ return 1;
 
 void  ICACHE_FLASH_ATTR i2c_PCF8574_Write(uint8 SAddr, uint8 Byte[], uint8 ByteNumbers)
 {
+//	if (i2c_PCF8574_enabled == 0)
+//	{return;}
 	uint8 i=0;
 	i2c_PCF8574_Address = SAddr;
 		for (i=0;i<ByteNumbers;i++)
@@ -100,6 +103,8 @@ void  ICACHE_FLASH_ATTR i2c_PCF8574_Write(uint8 SAddr, uint8 Byte[], uint8 ByteN
 
 void  ICACHE_FLASH_ATTR  i2c_PCF8574_Write1Byte(uint8 SAddr, uint8 Byte)
 {
+//	if (i2c_PCF8574_enabled == 0)
+//	{return;}
 	i2c_PCF8574_Address = SAddr;
 
 	i2c_PCF8574_buffer[0]=Byte;

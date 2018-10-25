@@ -564,7 +564,7 @@ int ICACHE_FLASH_ATTR cgi_index(HttpdConnData *connData)
 			temporary_light_on_timer=0;
 		}
 //		mFlag.minLight = atoi (buff);
-//		my_flash_var_write();
+//		AddCFG_Save();
 	}
 	memset(&buff[0], 0, sizeof(buff));
 
@@ -587,7 +587,7 @@ int ICACHE_FLASH_ATTR cgi_index(HttpdConnData *connData)
 			temporary_light_off_timer=0;
 		}
 //		mFlag.minLight = atoi (buff);
-//		my_flash_var_write();
+//		AddCFG_Save();
 	}
 	memset(&buff[0], 0, sizeof(buff));
 

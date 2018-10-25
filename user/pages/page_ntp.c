@@ -221,7 +221,7 @@ int ICACHE_FLASH_ATTR cgi_set_ntp(HttpdConnData *connData)
 
 //	mFlag.timezone = timezone;
 //	os_strcpy(mFlag.ntp, ntp);
-	my_flash_var_write();
+	AddCFG_Save();
 
 	//������ NTP
 	httpdRedirect(connData, "/set_ntp/set_ntp.tpl");

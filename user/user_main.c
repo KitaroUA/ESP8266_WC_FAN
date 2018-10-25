@@ -15,6 +15,7 @@ some pictures of cats.
 
 
 
+#include "user_config.h"
 
 #include <esp8266.h>
 #include "httpd.h"
@@ -32,7 +33,7 @@ some pictures of cats.
 
 
 
-#include "user_config.h"
+
 
 #define HI(X) (X>>8)
 #define LO(X) (X & 0xFF)
@@ -367,28 +368,6 @@ void ICACHE_FLASH_ATTR mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 // ==============================================================
 
 
-/*
- * FLASH part
- */
-
-void ICACHE_FLASH_ATTR my_flash_var_write (void)
-{
-	spi_flash_erase_sector((CFG_LOCATION - 1));
-	spi_flash_write((CFG_LOCATION - 1) * SPI_FLASH_SEC_SIZE,(uint32 *)&mFlag, sizeof(MY_FLASH_STR));
-
-}
-
-
-
-void ICACHE_FLASH_ATTR my_flash_var_read  (void)
-{
-	 spi_flash_read((CFG_LOCATION - 1) * SPI_FLASH_SEC_SIZE,
-	                   (uint32 *)&mFlag, sizeof(MY_FLASH_STR));
-}
-/*
- * End FLASH part
- */
-
 
 static void ICACHE_FLASH_ATTR networkServerFoundCb(const char *name, ip_addr_t *ip, void *arg) {
   static esp_tcp tcp;
@@ -464,61 +443,6 @@ void ICACHE_FLASH_ATTR user_rf_pre_init(void)
 {
 }
 
-void ICACHE_FLASH_ATTR my_flash_init(void)
-{
-	INFO("\r\n============= Load !DEFAULT! VAR ===================\r\n");
-	os_sprintf(mFlag.on_time, "%s", "0540");
-	os_sprintf(mFlag.off_time, "%s", "1320");
-	os_sprintf(mFlag.tempOff_time, "%s", "30");
-	os_sprintf(mFlag.tempOn_time, "%s", "45");
-	mFlag.minLight = 25000;
-	os_sprintf(mFlag.hostname, "ESP_IoT_04001");
-	os_sprintf(mFlag.ntp, "0.ua.pool.ntp.org");
-	mFlag.timezone = 2;
-	mFlag.ntp_flag=1;
-	mFlag.dst_flag=1;
-	mFlag.dst_active=1;
-
-
-	mFlag.Temperature_selector_array[0].temparture_sensor=1;
-	mFlag.Temperature_selector_array[0].control_channel=1;
-	mFlag.Temperature_selector_array[0].on_temperature=255000;
-	mFlag.Temperature_selector_array[0].off_temperature=265000;
-	mFlag.Temperature_selector_array[0].lower_dimmer_value=0xFF;
-	mFlag.Temperature_selector_array[0].upper_dimmer_value=0xFF;
-
-	mFlag.Temperature_selector_array[1].temparture_sensor=0;
-	mFlag.Temperature_selector_array[1].control_channel=103;
-	mFlag.Temperature_selector_array[1].on_temperature=265000;
-	mFlag.Temperature_selector_array[1].off_temperature=275000;
-	mFlag.Temperature_selector_array[1].lower_dimmer_value=10;
-	mFlag.Temperature_selector_array[1].upper_dimmer_value=240;
-
-	mFlag.Temperature_selector_array[2].temparture_sensor=0;
-	mFlag.Temperature_selector_array[2].control_channel=temperature_options_off;
-	mFlag.Temperature_selector_array[2].on_temperature=275000;
-	mFlag.Temperature_selector_array[2].off_temperature=285000;
-	mFlag.Temperature_selector_array[2].lower_dimmer_value=0xFF;
-	mFlag.Temperature_selector_array[2].upper_dimmer_value=0xFF;
-
-	mFlag.Temperature_selector_array[3].temparture_sensor=1;
-	mFlag.Temperature_selector_array[3].control_channel=3;
-	mFlag.Temperature_selector_array[3].on_temperature=285000;
-	mFlag.Temperature_selector_array[3].off_temperature=295000;
-	mFlag.Temperature_selector_array[3].lower_dimmer_value=0xFF;
-	mFlag.Temperature_selector_array[3].upper_dimmer_value=0xFF;
-
-	 mFlag.Temperature_display_array[0]=0;
-	 mFlag.Temperature_display_array[1]=1;
-
-	 os_sprintf(mFlag.mqtt_server,"%s","192.168.104.100");
-
-	 mFlag.mqtt_task_enabled = 1;
-	 mFlag.try=0;
-
-	 my_flash_var_write();
-}
-
 
 //Main routine. Initialize stdout, the I/O, filesystem and the webserver and we're done.
 void ICACHE_FLASH_ATTR user_init(void)
@@ -535,27 +459,11 @@ void ICACHE_FLASH_ATTR user_init(void)
 
 //	ioInit();
 
-/*
- * Init of flash variables
- * |||||||||||||||||||||||||
- * ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
- */
-
-//	my_flash_init();
-//	CFG_Load(1);
-
-/* ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
- * |||||||||||||||||||||||||
- * Init of flash variables
- */
 
 
-
-	my_flash_var_read();
+	AddCFG_Load();
 	mFlag.try++;
-	my_flash_var_write();
-	CFG_Load(0);
-
+	AddCFG_Save();
 
 
 
@@ -570,6 +478,9 @@ uint8_t work_mode = 0;
 
 	if (GPIO_INPUT_GET(WIFI_Button_Pin))
 	{
+		SysCFG_Load(0);
+//		INFO ("\r\n Try Normal = %d \r\n", mFlag.try);
+
 		INFO("\r\nNormal mode\r\n");
 		WIFI_Connect(sysCfg.sta_ssid, sysCfg.sta_pwd, wifiConnectCb);
 
@@ -589,6 +500,31 @@ uint8_t work_mode = 0;
 
 		builtInUrls[0].cgiArg = "/index_s.tpl";
 		work_mode=1;
+
+
+
+		mFlag.try++;
+
+//		INFO ("\r\n Try Setup = %d \r\n", mFlag.try);
+
+		if(mFlag.try == 2)
+		/*
+		 * Init of flash variables
+		 * |||||||||||||||||||||||||
+		 * ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+		 */
+
+			Default_CFG();
+			SysCFG_Load(1);
+
+		/* ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+		 * |||||||||||||||||||||||||
+		 * Init of flash variables
+		 */
+		mFlag.try=0;
+		AddCFG_Save();
+
+
 	}
 
 
@@ -674,7 +610,7 @@ if(work_mode == 0)
 	SetTimerTask(ds18b20_timer, ds18b20_search, 1500, 0);
 //	SetTimerTask(PCA9685_timer, i2c_PCA9685_Init, 2, 0);
 
-
+	i2c_PCF8574_enabled = 1;
 
 //	PIN_FUNC_SELECT(RELAY_MUX, RELAY_FUNC);
 

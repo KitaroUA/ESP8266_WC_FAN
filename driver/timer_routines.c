@@ -170,7 +170,7 @@ void ICACHE_FLASH_ATTR circular_timer_proc(void)
 
 				}
 				mFlag.dst_active = dt->tm_isdst;
-				my_flash_var_write();
+				AddCFG_Save();
 				mktime(dt);
 
 
@@ -281,7 +281,10 @@ void ICACHE_FLASH_ATTR every_second_task()
 			}
 
 		}
-
+		uint8 ii[1];
+		ii[0] = bcdToDec(DS3231_Time[0]);
+//		ii[0] = 0x01;
+		i2c_PCF8574_Write(0x4c,ii,1);
 
 
 

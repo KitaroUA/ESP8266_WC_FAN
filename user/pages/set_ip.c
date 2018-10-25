@@ -242,7 +242,7 @@ int ICACHE_FLASH_ATTR cgi_set_ip_1(HttpdConnData *connData)
 	}
 
 
-	CFG_Save();
+	SysCFG_Save();
 	httpdRedirect(connData, "/set_ip/set_ip.tpl");
 	return HTTPD_CGI_DONE;
 }

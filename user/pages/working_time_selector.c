@@ -104,7 +104,7 @@ int ICACHE_FLASH_ATTR cgi_working_time_selector_1(HttpdConnData *connData) {
 		INFO(ct);
 		INFO("\r\n\r\n");
 		os_strcpy(mFlag.on_time,ct);
-		my_flash_var_write();
+		AddCFG_Save();
 	}
 
 
@@ -121,7 +121,7 @@ int ICACHE_FLASH_ATTR cgi_working_time_selector_1(HttpdConnData *connData) {
 		INFO(ct);
 		INFO("\r\n\r\n");
 		os_strcpy(mFlag.off_time,ct);
-		my_flash_var_write();
+		AddCFG_Save();
 	}
 
 	httpdRedirect(connData, "/working_time_selector/working_time_selector.tpl");

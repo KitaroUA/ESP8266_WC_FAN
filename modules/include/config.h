@@ -57,9 +57,52 @@ typedef struct {
     uint8 pad[3];
 } SAVE_FLAG;
 
-void ICACHE_FLASH_ATTR CFG_Save();
-void ICACHE_FLASH_ATTR CFG_Load(uint8 RLoad);
+
+#define number_of_temperature_options_channels 4
+#define number_of_relay_channels 4 //	PCF8574 1...8
+#define number_of_PWM_channels 5 //	PCA9685 1...16
+#define temperature_options_off 255
+typedef struct {
+    uint8 temparture_sensor;	//from temperature sensors array
+    							//if 0xFF - channel is disabled
+    uint8 control_channel;		//from external control array 0..99 - Relay, 100..199 - PWM, if 0xFF - channel is disabled
+	int on_temperature;		//temperature, when to turn on external load, or to start/lower dimming
+	int off_temperature;		//temperature, when to turn off external load, or for upper dimmer
+	uint8 lower_dimmer_value;	//
+	uint8 upper_dimmer_value;
+} Temperature_selector_struct;
+
+
+typedef struct {
+    uint8 flag;
+    uint8 on_time[5];
+	uint8 off_time[5];
+	uint8 tempOff_time[5];
+	uint8 tempOn_time[5];
+	uint32 minLight;
+	int8 timezone;
+	uint8 hostname[30];
+	uint8 ntp[30];
+	uint8 ntp_flag;
+	uint8 dst_flag;
+	uint8 dst_active;
+	Temperature_selector_struct Temperature_selector_array[number_of_temperature_options_channels];
+	uint8 Temperature_display_array[2] ;
+	uint8 mqtt_server[30];
+	uint8 mqtt_task_enabled;
+	uint8 try;
+} MY_FLASH_STR;
+
+
+
+void ICACHE_FLASH_ATTR SysCFG_Save();
+void ICACHE_FLASH_ATTR SysCFG_Load(uint8 RLoad);
 
 extern SYSCFG sysCfg;
+extern MY_FLASH_STR mFlag;
+
+void ICACHE_FLASH_ATTR AddCFG_Save (void);
+void ICACHE_FLASH_ATTR AddCFG_Load  (void);
+void ICACHE_FLASH_ATTR Default_CFG(void);
 
 #endif /* USER_CONFIG_H_ */

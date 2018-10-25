@@ -39,7 +39,7 @@ int ICACHE_FLASH_ATTR tpl_set_mqtt(HttpdConnData *connData, char *token, void **
 	}
 	memset(&cj[0], 0, sizeof(cj));
 
-	CFG_Save();
+	SysCFG_Save();
 
 	httpdSend(connData, buff, -1);
 	return HTTPD_CGI_DONE;
@@ -75,7 +75,7 @@ int ICACHE_FLASH_ATTR cgi_set_mqtt(HttpdConnData *connData)
 
 
 
-	my_flash_var_write();
+	AddCFG_Save();
 
 
 	httpdRedirect(connData, "/set_mqtt/set_mqtt.tpl");

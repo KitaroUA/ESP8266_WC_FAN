@@ -46,7 +46,7 @@ int ICACHE_FLASH_ATTR cgi_set_temp_on(HttpdConnData *connData)
 	if (len!=0) {
 //		temporary_light_on_timer = atoi (mFlag.tempOn_time)*60;
 		os_strcpy(mFlag.tempOn_time,buff);
-		my_flash_var_write();
+		AddCFG_Save();
 	}
 	httpdRedirect(connData, "/set_temp_on/set_temp_on.tpl");
 	return HTTPD_CGI_DONE;

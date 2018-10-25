@@ -42,8 +42,10 @@
 SYSCFG sysCfg;
 SAVE_FLAG saveFlag;
 
+MY_FLASH_STR mFlag;
+
 void ICACHE_FLASH_ATTR
-CFG_Save()
+SysCFG_Save()
 {
 	 spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
 	                   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
@@ -68,7 +70,7 @@ CFG_Save()
 }
 
 void ICACHE_FLASH_ATTR
-CFG_Load(uint8 RLoad)
+SysCFG_Load(uint8 RLoad)
 {
 
 	INFO("\r\nload ...\r\n");
@@ -121,7 +123,91 @@ CFG_Load(uint8 RLoad)
 
 		INFO(" default configuration\r\n");
 
-		CFG_Save();
+		SysCFG_Save();
 	}
 
 }
+
+
+
+
+/*
+ * FLASH part
+ */
+
+void ICACHE_FLASH_ATTR AddCFG_Save (void)
+{
+	spi_flash_erase_sector((CFG_LOCATION - 1));
+	spi_flash_write((CFG_LOCATION - 1) * SPI_FLASH_SEC_SIZE,(uint32 *)&mFlag, sizeof(MY_FLASH_STR));
+
+}
+
+
+
+void ICACHE_FLASH_ATTR AddCFG_Load  (void)
+{
+	 spi_flash_read((CFG_LOCATION - 1) * SPI_FLASH_SEC_SIZE,
+	                   (uint32 *)&mFlag, sizeof(MY_FLASH_STR));
+}
+
+
+void ICACHE_FLASH_ATTR Default_CFG(void)
+{
+	INFO("\r\n============= Load !DEFAULT! VAR ===================\r\n");
+	os_sprintf(mFlag.on_time, "%s", "0540");
+	os_sprintf(mFlag.off_time, "%s", "1320");
+	os_sprintf(mFlag.tempOff_time, "%s", "30");
+	os_sprintf(mFlag.tempOn_time, "%s", "45");
+	mFlag.minLight = 25000;
+	os_sprintf(mFlag.hostname, "ESP_IoT_04001");
+	os_sprintf(mFlag.ntp, "0.ua.pool.ntp.org");
+	mFlag.timezone = 2;
+	mFlag.ntp_flag=1;
+	mFlag.dst_flag=1;
+	mFlag.dst_active=1;
+
+
+	mFlag.Temperature_selector_array[0].temparture_sensor=1;
+	mFlag.Temperature_selector_array[0].control_channel=1;
+	mFlag.Temperature_selector_array[0].on_temperature=255000;
+	mFlag.Temperature_selector_array[0].off_temperature=265000;
+	mFlag.Temperature_selector_array[0].lower_dimmer_value=0xFF;
+	mFlag.Temperature_selector_array[0].upper_dimmer_value=0xFF;
+
+	mFlag.Temperature_selector_array[1].temparture_sensor=0;
+	mFlag.Temperature_selector_array[1].control_channel=103;
+	mFlag.Temperature_selector_array[1].on_temperature=265000;
+	mFlag.Temperature_selector_array[1].off_temperature=275000;
+	mFlag.Temperature_selector_array[1].lower_dimmer_value=10;
+	mFlag.Temperature_selector_array[1].upper_dimmer_value=240;
+
+	mFlag.Temperature_selector_array[2].temparture_sensor=0;
+	mFlag.Temperature_selector_array[2].control_channel=temperature_options_off;
+	mFlag.Temperature_selector_array[2].on_temperature=275000;
+	mFlag.Temperature_selector_array[2].off_temperature=285000;
+	mFlag.Temperature_selector_array[2].lower_dimmer_value=0xFF;
+	mFlag.Temperature_selector_array[2].upper_dimmer_value=0xFF;
+
+	mFlag.Temperature_selector_array[3].temparture_sensor=1;
+	mFlag.Temperature_selector_array[3].control_channel=3;
+	mFlag.Temperature_selector_array[3].on_temperature=285000;
+	mFlag.Temperature_selector_array[3].off_temperature=295000;
+	mFlag.Temperature_selector_array[3].lower_dimmer_value=0xFF;
+	mFlag.Temperature_selector_array[3].upper_dimmer_value=0xFF;
+
+	 mFlag.Temperature_display_array[0]=0;
+	 mFlag.Temperature_display_array[1]=1;
+
+	 os_sprintf(mFlag.mqtt_server,"%s","192.168.104.100");
+
+	 mFlag.mqtt_task_enabled = 1;
+	 mFlag.try=0;
+
+	 AddCFG_Save();
+}
+
+
+/*
+ * End FLASH part
+ */
+
