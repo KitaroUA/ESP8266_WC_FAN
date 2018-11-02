@@ -444,6 +444,84 @@ void ICACHE_FLASH_ATTR user_rf_pre_init(void)
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+os_timer_t ext_int_timer;
+
+extern int ets_uart_printf(const char *fmt, ...);
+int (*console_printf)(const char *fmt, ...) = ets_uart_printf;
+
+extern uint8_t pin_num[GPIO_PIN_NUM];
+
+// GPIO_PIN_INTR_NEGEDGE - down
+// GPIO_PIN_INTR_POSEDGE - up
+// GPIO_PIN_INTR_ANYEDGE - both
+// GPIO_PIN_INTR_LOLEVEL - low level
+// GPIO_PIN_INTR_HILEVEL - high level
+// GPIO_PIN_INTR_DISABLE - disable interrupt
+const char *gpio_type_desc[] =
+{
+	    "GPIO_PIN_INTR_DISABLE (DISABLE INTERRUPT)",
+	    "GPIO_PIN_INTR_POSEDGE (UP)",
+	    "GPIO_PIN_INTR_NEGEDGE (DOWN)",
+	    "GPIO_PIN_INTR_ANYEDGE (BOTH)",
+	    "GPIO_PIN_INTR_LOLEVEL (LOW LEVEL)",
+	    "GPIO_PIN_INTR_HILEVEL (HIGH LEVEL)"
+};
+
+void intr_callback(unsigned pin, unsigned level);
+void ICACHE_FLASH_ATTR intr_reattach(void)
+{
+	INFO("\r\nINTERRUPT: GPIO%d reattached \r\n", WIFI_Button_Pin);
+	gpio_intr_init(WIFI_Button_Pin,GPIO_PIN_INTR_POSEDGE);
+	gpio_intr_attach(intr_callback);
+
+}
+
+
+void ICACHE_FLASH_ATTR intr_callback_t(void)
+{
+	INFO("\r\nINTERRUPT: GPIO%d = %d\r\n", WIFI_Button_Pin, GPIO_INPUT_GET(WIFI_Button_Pin));
+	gpio_intr_deattach(WIFI_Button_Pin);
+	SetTimerTask (ext_int_timer, intr_reattach, 50, 0);
+
+
+}
+
+
+void ICACHE_FLASH_ATTR intr_callback(unsigned pin, unsigned level)
+{
+	SetTimerTask (ext_int_timer, intr_callback_t, 1, 0);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //Main routine. Initialize stdout, the I/O, filesystem and the webserver and we're done.
 void ICACHE_FLASH_ATTR user_init(void)
 {
@@ -615,9 +693,30 @@ if(work_mode == 0)
 //	PIN_FUNC_SELECT(RELAY_MUX, RELAY_FUNC);
 
 	SetTimerTask(BME280_timer_read, BME280_Start_Init, 5000, 0);
-//	os_timer_disarm (&BME280_timer_read);
-//	os_timer_setfn (&BME280_timer_read, (os_timer_func_t *)BME280_Start_Init, NULL);
-//	os_timer_arm(&BME280_timer_read, 10000, 0);	// ��������� ������� ����� 2��
+
+//	======================================
+//	External interrupts
+	GPIO_INT_TYPE gpio_type;
+	uint8_t gpio_pin;
+
+
+	INFO ("\r\n External Int.\r\n");
+	gpio_pin = 5;
+	gpio_type = GPIO_PIN_INTR_POSEDGE;
+	if (set_gpio_mode(gpio_pin,  GPIO_INT, GPIO_PULLUP)) {
+		INFO("GPIO%d set interrupt mode\r\n", pin_num[gpio_pin]);
+		if (gpio_intr_init(gpio_pin, gpio_type)) {
+			INFO("GPIO%d enable %s mode\r\n", pin_num[gpio_pin], gpio_type_desc[gpio_type]);
+			gpio_intr_attach(intr_callback);
+		} else {
+			INFO("Error: GPIO%d not enable %s mode\r\n", pin_num[gpio_pin], gpio_type_desc[gpio_type]);
+		}
+	} else {
+		INFO("Error: GPIO%d not set interrupt mode\r\n", pin_num[gpio_pin]);
+	}
+//	External interrupts
+//	======================================
+
 
 }
 else

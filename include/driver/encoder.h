@@ -1,7 +1,7 @@
 /*
  * encoder.h
  *
- *  Created on: 7 бер. 2017 р.
+ *  Created on: 7 пїЅпїЅпїЅ. 2017 пїЅ.
  *      Author: Kitaro
  */
 

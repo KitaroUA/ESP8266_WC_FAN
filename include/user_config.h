@@ -4,12 +4,12 @@
 #include <osapi.h>
 #include <os_type.h>
 #include <gpio.h>
+#include "driver/gpio16.h"
 #include <ets_sys.h>
 #include "user_interface.h"
 #include "driver/time.h"
 #include <mem.h>
 
-#include "driver/default_flash_vars.h"
 
 #include "driver/uart.h"
 #include "driver/i2c.h"
@@ -19,6 +19,7 @@
 //#include "driver/hd44780.h"
 #include "driver/IIC_SHT3X.h"
 #include "driver/IIC_PCA9685.h"
+#include "driver/IIC_mpr121.h"
 
 
 #include "driver/DS18B20.h"
@@ -206,7 +207,7 @@ MQTT_Client mqttClient;
 
 
 #include "driver/gpio16.h"
-#include "driver/encoder.h"
+//#include "driver/encoder.h"
 
 
 #include "pages/temperature_selector.h"

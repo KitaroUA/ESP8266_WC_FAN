@@ -109,7 +109,7 @@ for (i=0;i<ByteNumbers;i++)
 i2c_start();
 i2c_writeByte(SAddr);
 if (!i2c_check_ack()) {
-  //os_printf("-%s-%s slave not ack... return \r\n", __FILE__, __func__);
+  os_printf("Addr:%X-%s-%s slave not ack... return \r\n", SAddr, __FILE__, __func__);
   i2c_stop();
   i2c_Do &= i2c_Free;			// ����������� ����
   return(0);
@@ -120,10 +120,11 @@ if (!i2c_check_ack()) {
 
 
 i2c_pointer = 0;
+
 os_timer_disarm (&i2c_timer);
 os_timer_setfn (&i2c_timer, (os_timer_func_t *)i2c_send, NULL);
-os_timer_arm(&i2c_timer, 1, 0);
-
+/*os_timer_arm(&i2c_timer, 1, 0);*/
+i2c_send();
 return 1;
 }
 

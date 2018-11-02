@@ -83,6 +83,7 @@ SysCFG_Load(uint8 RLoad)
 		spi_flash_read((CFG_LOCATION + 1) * SPI_FLASH_SEC_SIZE,
 					   (uint32 *)&sysCfg, sizeof(SYSCFG));
 	}
+/*
 	if( (sysCfg.cfg_holder != CFG_HOLDER) | (RLoad == 1)){
 		os_memset(&sysCfg, 0x00, sizeof sysCfg);
 
@@ -100,7 +101,7 @@ SysCFG_Load(uint8 RLoad)
 		os_sprintf(sysCfg.mqtt_user, "%s", MQTT_USER);
 		os_sprintf(sysCfg.mqtt_pass, "%s", MQTT_PASS);
 
-		sysCfg.security = DEFAULT_SECURITY;	/* default non ssl */
+		sysCfg.security = DEFAULT_SECURITY;	// default non ssl
 
 		sysCfg.mqtt_keepalive = MQTT_KEEPALIVE;
 
@@ -125,7 +126,7 @@ SysCFG_Load(uint8 RLoad)
 
 		SysCFG_Save();
 	}
-
+*/
 }
 
 
@@ -154,6 +155,47 @@ void ICACHE_FLASH_ATTR AddCFG_Load  (void)
 void ICACHE_FLASH_ATTR Default_CFG(void)
 {
 	INFO("\r\n============= Load !DEFAULT! VAR ===================\r\n");
+
+
+	os_memset(&sysCfg, 0x00, sizeof sysCfg);
+
+
+	sysCfg.cfg_holder = CFG_HOLDER;
+
+	os_sprintf(sysCfg.sta_ssid, "%s", STA_SSID);
+	os_sprintf(sysCfg.sta_pwd, "%s", STA_PASS);
+	sysCfg.sta_type = STA_TYPE;
+
+	os_sprintf(sysCfg.device_id, MQTT_CLIENT_ID, system_get_chip_id());
+	os_sprintf(sysCfg.mqtt_host, "%s", mFlag.mqtt_server);
+	sysCfg.mqtt_port = MQTT_PORT;
+	os_sprintf(sysCfg.mqtt_user, "%s", MQTT_USER);
+	os_sprintf(sysCfg.mqtt_pass, "%s", MQTT_PASS);
+
+	sysCfg.security = DEFAULT_SECURITY;	// default non ssl
+
+	sysCfg.mqtt_keepalive = MQTT_KEEPALIVE;
+
+	sysCfg.dhcp_sta_enabled = 0;
+
+	IP4_ADDR(&sysCfg.staipinfo.ip, sta_ip_a, sta_ip_b, sta_ip_c, sta_ip_d);
+	IP4_ADDR(&sysCfg.staipinfo.gw, sta_gw_a, sta_gw_b, sta_gw_c, sta_gw_d);
+	IP4_ADDR(&sysCfg.staipinfo.netmask, sta_nm_a, sta_nm_b, sta_nm_c, sta_nm_d);
+
+
+	IP4_ADDR(&sysCfg.apipinfo.ip, sap_ip_a, sap_ip_b, sap_ip_c, sap_ip_d);
+	IP4_ADDR(&sysCfg.apipinfo.gw, sap_gw_a, sap_gw_b, sap_gw_c, sap_gw_d);
+	IP4_ADDR(&sysCfg.apipinfo.netmask, sap_nm_a, sap_nm_b, sap_nm_c, sap_nm_d);
+
+	INFO(" default configuration\r\n");
+
+	SysCFG_Save();
+
+
+
+
+
+
 	os_sprintf(mFlag.on_time, "%s", "0540");
 	os_sprintf(mFlag.off_time, "%s", "1320");
 	os_sprintf(mFlag.tempOff_time, "%s", "30");
