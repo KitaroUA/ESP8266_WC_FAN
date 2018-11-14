@@ -9,20 +9,15 @@
  * Modification history:
  *     2014/3/12, v1.0 create this file.
 *******************************************************************************/
-#include <c_types.h>
 #include "ets_sys.h"
 #include "osapi.h"
-#include "driver\uart.h"
-//#include <string.h>
-#include <mem.h>
+#include "driver/uart.h"
 
 #define UART0   0
 #define UART1   1
 
 // UartDev is defined and initialized in rom code.
 extern UartDevice UartDev;
-
-void uart0_tx_buffer(uint8 *buf, uint16 len);
 
 LOCAL void uart0_rx_intr_handler(void *para);
 
@@ -41,7 +36,6 @@ uart_config(uint8 uart_no)
         PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_U1TXD_BK);
     } else {
         /* rcv_buff size if 0x100 */
-
         ETS_UART_INTR_ATTACH(uart0_rx_intr_handler,  &(UartDev.rcv_buff));
         PIN_PULLUP_DIS(PERIPHS_IO_MUX_U0TXD_U);
         PIN_FUNC_SELECT(PERIPHS_IO_MUX_U0TXD_U, FUNC_U0TXD);
@@ -116,8 +110,8 @@ uart1_write_char(char c)
  * Parameters   : void *para - point to ETS_UART_INTR_ATTACH's arg
  * Returns      : NONE
 *******************************************************************************/
-extern void ProcessCommand(char* str);
-LOCAL void uart0_rx_intr_handler(void *para)
+LOCAL void
+uart0_rx_intr_handler(void *para)
 {
     /* uart0 and uart1 intr combine togther, when interrupt occur, see reg 0x3ff20020, bit2, bit0 represents
      * uart1 and uart0 respectively
@@ -136,31 +130,15 @@ LOCAL void uart0_rx_intr_handler(void *para)
 
         /* you can add your handle code below.*/
 
+        *(pRxBuff->pWritePos) = RcvChar;
+
         // insert here for get one command line from uart
-		uart_tx_one_char(RcvChar);
-        if (RcvChar == '\r') continue;
-		if (RcvChar == '\n') {
+        if (RcvChar == '\r') {
+            pRxBuff->BuffState = WRITE_OVER;
+        }
 
-			int len;
-			char *str;
-			len = pRxBuff->pWritePos - pRxBuff->pReadPos;
-			if (len == 0) continue;
-			if (len < 0) len += RX_BUFF_SIZE;
-			str = (char*)os_zalloc(len+1);
-			if (str) {
-				uint8 loop;
-				for (loop = 0; loop < len; loop++) str[loop] = uart0_rx_one_char();
-				str[len] = '\0';
-				ProcessCommand(str);
-				os_free(str);
-			}
+        pRxBuff->pWritePos++;
 
-        } else {
-			*(pRxBuff->pWritePos) = RcvChar;
-			pRxBuff->pWritePos++;
-		}
-
-        // if we hit the end of the buffer, loop back to the beginning
         if (pRxBuff->pWritePos == (pRxBuff->pRcvMsgBuff + RX_BUFF_SIZE)) {
             // overflow ...we may need more error handle here.
             pRxBuff->pWritePos = pRxBuff->pRcvMsgBuff ;
@@ -168,16 +146,6 @@ LOCAL void uart0_rx_intr_handler(void *para)
     }
 }
 
-ICACHE_FLASH_ATTR int uart0_rx_one_char() {
-  if(UartDev.rcv_buff.pReadPos == UartDev.rcv_buff.pWritePos) return -1;
-  int ret = *UartDev.rcv_buff.pReadPos;
-  UartDev.rcv_buff.pReadPos++;
-  if(UartDev.rcv_buff.pReadPos == (UartDev.rcv_buff.pRcvMsgBuff + RX_BUFF_SIZE)) {
-    UartDev.rcv_buff.pReadPos = UartDev.rcv_buff.pRcvMsgBuff;
-  }
-
-  return ret;
-}
 
 /******************************************************************************
  * FunctionName : uart0_tx_buffer
@@ -186,20 +154,13 @@ ICACHE_FLASH_ATTR int uart0_rx_one_char() {
  *                uint16 len - buffer len
  * Returns      :
 *******************************************************************************/
-void ICACHE_FLASH_ATTR uart0_tx_buffer(uint8 *buf, uint16 len)
+void ICACHE_FLASH_ATTR
+uart0_tx_buffer(uint8 *buf, uint16 len)
 {
     uint16 i;
 
     for (i = 0; i < len; i++) {
         uart_tx_one_char(buf[i]);
-    }
-}
-
-void ICACHE_FLASH_ATTR uart0_send(char *str) {
-	uint8 i = 0;
-	while (str[i]) {
-        uart_tx_one_char(str[i]);
-		i++;
     }
 }
 
@@ -211,7 +172,8 @@ void ICACHE_FLASH_ATTR uart0_send(char *str) {
  * Returns      : NONE
 *******************************************************************************/
 void ICACHE_FLASH_ATTR
-uart_init(UartBautRate uart0_br, UartBautRate uart1_br) {
+uart_init(UartBautRate uart0_br, UartBautRate uart1_br)
+{
     // rom use 74880 baut_rate, here reinitialize
     UartDev.baut_rate = uart0_br;
     uart_config(UART0);
@@ -221,7 +183,5 @@ uart_init(UartBautRate uart0_br, UartBautRate uart1_br) {
 
     // install uart1 putc callback
     os_install_putc1((void *)uart1_write_char);
-//    UartDev.rcv_buff.pWritePos = UartDev.rcv_buff.pRcvMsgBuff;
-//    UartDev.rcv_buff.pReadPos  = UartDev.rcv_buff.pRcvMsgBuff;
 }
 

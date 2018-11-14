@@ -1,9 +1,8 @@
 #ifndef UART_APP_H
 #define UART_APP_H
 
-#include "driver\uart_register.h"
-#include "eagle_soc.h"
-#include "c_types.h"
+#include "uart_register.h"
+#include "user_config.h"
 
 #define RX_BUFF_SIZE    0x100
 #define TX_BUFF_SIZE    100
@@ -93,8 +92,6 @@ typedef struct {
 } UartDevice;
 
 void uart_init(UartBautRate uart0_br, UartBautRate uart1_br);
-int uart0_rx_one_char();
-void uart0_send(char *buf);
 
 #endif
 

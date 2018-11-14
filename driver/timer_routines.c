@@ -227,6 +227,24 @@ void ICACHE_FLASH_ATTR every_second_task()
 	rand_time = system_get_time()%100;
 	SetTimerTask(SSD1306_CB_timer,i2c_SSD1306_LCD_Update,(rand_time),0);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	// �������� ���� ���������
 	// -------------------------
 		uint16 cur_time = (bcdToDec(DS3231_Time[2]))*60+bcdToDec(DS3231_Time[1]);
@@ -285,6 +303,12 @@ void ICACHE_FLASH_ATTR every_second_task()
 		ii[0] = bcdToDec(DS3231_Time[0]);
 //		ii[0] = 0x01;
 		i2c_PCF8574_Write(0x4c,ii,1);
+
+
+
+
+
+
 
 
 
@@ -376,6 +400,14 @@ void ICACHE_FLASH_ATTR every_5_second_task ()
 				}
 
 //				os_printf("\r\n --Nextion-- \r\n");
+/*				char cj[21];
+				os_sprintf(cj, "UART0 send");
+
+				uart0_tx_buffer(cj, sizeof(cj));*/
+
+
+
+
 
 }
 

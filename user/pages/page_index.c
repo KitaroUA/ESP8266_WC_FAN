@@ -583,7 +583,7 @@ int ICACHE_FLASH_ATTR cgi_index(HttpdConnData *connData)
 		}
 		if (os_strcmp("true",buff)==0)
 		{
-			temporary_light_on_timer=atoi (mFlag.tempOn_time)*60;;
+			temporary_light_on_timer=atoi (mFlag.tempOn_time)*60;
 			temporary_light_off_timer=0;
 		}
 //		mFlag.minLight = atoi (buff);

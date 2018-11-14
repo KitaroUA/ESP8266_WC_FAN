@@ -113,10 +113,14 @@ CgiUploadFlashDef uploadParams={
 #ifdef OTA_FLASH_SIZE_K
 CgiUploadFlashDef uploadParams={
 	.type=CGIFLASH_TYPE_FW,
-	.fw1Pos=0x1000,
-	.fw2Pos=((OTA_FLASH_SIZE_K*1024)/2)+0x1000,
-	.fwSize=((OTA_FLASH_SIZE_K*1024)/2)-0x1000,
-	.tagName=OTA_TAGNAME
+#if OTA_FLASH_SIZE_K < 2049
+        .fw2Pos=((OTA_FLASH_SIZE_K*1024)/2)+0x1000,
+        .fwSize=((OTA_FLASH_SIZE_K*1024)/2)-0x1000,
+#else
+        .fw2Pos=0x101000,
+        .fwSize=0xFF000,
+#endif//	.tagName=OTA_TAGNAME
+	.tagName="tag"
 };
 #define INCLUDE_FLASH_FNS
 #endif
@@ -522,6 +526,31 @@ void ICACHE_FLASH_ATTR intr_callback(unsigned pin, unsigned level)
 
 
 
+
+
+
+
+
+
+void ICACHE_FLASH_ATTR ProcessCommand(char* str) {
+
+INFO("\r\n UART0 Receive:%s\r\n",str);
+
+if (!strcmp(str, "+")) {
+INFO ("\r\n If validated\r\n");
+if (temporary_light_on_timer == 0) {temporary_light_on_timer=atoi (mFlag.tempOn_time)*60;}
+else if (temporary_light_on_timer != 0) {temporary_light_on_timer=0;}
+
+}
+}
+
+
+
+
+
+
+
+
 //Main routine. Initialize stdout, the I/O, filesystem and the webserver and we're done.
 void ICACHE_FLASH_ATTR user_init(void)
 {
@@ -532,6 +561,9 @@ void ICACHE_FLASH_ATTR user_init(void)
 
 
 //	stdoutInit();
+
+
+
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
 	INFO("\r\nStarting... \r\n");
 
@@ -716,6 +748,8 @@ if(work_mode == 0)
 	}
 //	External interrupts
 //	======================================
+
+
 
 
 }
