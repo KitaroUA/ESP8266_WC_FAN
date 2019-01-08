@@ -263,13 +263,13 @@ void ICACHE_FLASH_ATTR every_second_task()
 					|(temporary_light_on_timer != 0)
 				)
 			{
-				GPIO_OUTPUT_SET(RELAY_PIN, 1);
+//				GPIO_OUTPUT_SET(RELAY_PIN, 1);
 				global_light_status=1;
 //				os_printf("  ON1 \r\n");
 			}
 			else
 			{
-				GPIO_OUTPUT_SET(RELAY_PIN, 0);
+//				GPIO_OUTPUT_SET(RELAY_PIN, 0);
 				global_light_status=0;
 //				os_printf("  OFF1 \r\n");
 			}
@@ -285,14 +285,14 @@ void ICACHE_FLASH_ATTR every_second_task()
 					|(temporary_light_on_timer != 0)
 				)
 			{
-				GPIO_OUTPUT_SET(RELAY_PIN, 1);
+//				GPIO_OUTPUT_SET(RELAY_PIN, 1);
 //				i2c_PCF8574_Write(0x4c,0xFF,1);
 				global_light_status=1;
 //				os_printf("  ON2 \r\n");
 			}
 			else
 			{
-				GPIO_OUTPUT_SET(RELAY_PIN, 0);
+//				GPIO_OUTPUT_SET(RELAY_PIN, 0);
 //				i2c_PCF8574_Write(0x4c,0x00,1);
 				global_light_status=0;
 //				os_printf("  OFF2 \r\n");
@@ -303,6 +303,8 @@ void ICACHE_FLASH_ATTR every_second_task()
 		ii[0] = bcdToDec(DS3231_Time[0]);
 //		ii[0] = 0x01;
 		i2c_PCF8574_Write(0x4c,ii,1);
+//		BitBang_TLC5947_setPWM(0,(ii[0]*4096)/60);
+//		BitBang_TLC5947_write();
 
 
 

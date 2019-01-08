@@ -27,6 +27,8 @@
 
 #include "driver/IIC_SSD1306.h"
 
+#include "driver/IIC_mpr121.h"
+
 
 
 uint8 global_light_status;
@@ -88,6 +90,9 @@ uint8 global_light_status;
 #define S2f_g	FUNC_GPIO9	//	gpio function
 #define S2f_sd	FUNC_SDDATA2	//	sd data
 #define S2f_spi FUNC_SPIHD	//	SPI hd
+
+
+
 
 /*
 	!!!!!!!!!!!!!!!
@@ -206,7 +211,7 @@ MQTT_Client mqttClient;
 
 
 
-#include "driver/gpio16.h"
+
 //#include "driver/encoder.h"
 
 
@@ -218,6 +223,7 @@ MQTT_Client mqttClient;
 #include "pages/mqtt_settings.h"
 #include "pages/set_ip.h"
 #include "pages/page_index.h"
+#include "pages/slider.h"
 
 
 
@@ -245,5 +251,21 @@ os_timer_t bme280_sensor_timer;
 
 
 #include "driver/nextion_var.h"
+
+
+
+
+#include "driver/gpio16.h"
+
+
+
+
+#include "driver/BitBang_TLC5947.h"
+
+
+
+
+
+
 
 #endif

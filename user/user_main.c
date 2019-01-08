@@ -40,6 +40,39 @@ some pictures of cats.
 
 #define DSDEBUG 0
 
+#define GPIO_PIN_NUM 13
+#define ESP_GPIO_PIN_NUM 17
+
+uint8_t pin2esp_pin[GPIO_PIN_NUM];
+uint8_t pin2esp_pin[GPIO_PIN_NUM] = {16,  5,  4,  0,
+								     2, 14, 12, 13,
+								    15,  3,  1,  9,
+								    10};
+
+uint8_t esp_pin2pin[ESP_GPIO_PIN_NUM];
+uint8_t esp_pin2pin[ESP_GPIO_PIN_NUM] = {  3,
+										  10,   4,   9,  2,  1,
+										 255, 255, 255, 11, 12,
+										 255,   6,   7,  5,  8,
+										   0};
+
+// D0 - not used, d1-d8
+uint8  DXpin_array[] = { 255, 5,  4,  0,  2, 14, 12, 13, 15};
+uint8 DXgpio_array[] = { 255, FUNC_GPIO5, FUNC_GPIO4, FUNC_GPIO0, FUNC_GPIO2, FUNC_GPIO14, FUNC_GPIO12, FUNC_GPIO13, FUNC_GPIO15};
+uint32 DXmux_array[] = { 255, PERIPHS_IO_MUX_GPIO5_U, PERIPHS_IO_MUX_GPIO4_U, PERIPHS_IO_MUX_GPIO0_U, PERIPHS_IO_MUX_GPIO2_U,
+							  PERIPHS_IO_MUX_MTMS_U, PERIPHS_IO_MUX_MTDI_U, PERIPHS_IO_MUX_MTCK_U, PERIPHS_IO_MUX_MTDO_U};
+const char *gpio_type_desc[] =
+{
+	    "GPIO_PIN_INTR_DISABLE (DISABLE INTERRUPT)",
+	    "GPIO_PIN_INTR_POSEDGE (UP)",
+	    "GPIO_PIN_INTR_NEGEDGE (DOWN)",
+	    "GPIO_PIN_INTR_ANYEDGE (BOTH)",
+	    "GPIO_PIN_INTR_LOLEVEL (LOW LEVEL)",
+	    "GPIO_PIN_INTR_HILEVEL (HIGH LEVEL)"
+};
+
+
+
 
 //The example can print out the heap use every 3 seconds. You can use this to catch memory leaks.
 //#define SHOW_HEAP_USE
@@ -242,6 +275,16 @@ HttpdBuiltInUrl builtInUrls[]={
 			{"/set_ip/set_ip.tpl", cgiEspFsTemplate, tpl_set_ip},
 			{"/set_ip/set_ip_1.cgi", cgi_set_ip_1, NULL},
 			{"/set_ip/set_ip_2.cgi", cgi_set_ip_2, NULL},
+
+
+/*
+ * Some test pages
+ */
+
+			{"/slider.tpl", cgiEspFsTemplate, tpl_slider},
+			{"/set_slider.cgi",cgi_set_slider, NULL},
+
+
 
 
 
@@ -465,26 +508,8 @@ void ICACHE_FLASH_ATTR user_rf_pre_init(void)
 
 os_timer_t ext_int_timer;
 
-extern int ets_uart_printf(const char *fmt, ...);
-int (*console_printf)(const char *fmt, ...) = ets_uart_printf;
-
 extern uint8_t pin_num[GPIO_PIN_NUM];
 
-// GPIO_PIN_INTR_NEGEDGE - down
-// GPIO_PIN_INTR_POSEDGE - up
-// GPIO_PIN_INTR_ANYEDGE - both
-// GPIO_PIN_INTR_LOLEVEL - low level
-// GPIO_PIN_INTR_HILEVEL - high level
-// GPIO_PIN_INTR_DISABLE - disable interrupt
-const char *gpio_type_desc[] =
-{
-	    "GPIO_PIN_INTR_DISABLE (DISABLE INTERRUPT)",
-	    "GPIO_PIN_INTR_POSEDGE (UP)",
-	    "GPIO_PIN_INTR_NEGEDGE (DOWN)",
-	    "GPIO_PIN_INTR_ANYEDGE (BOTH)",
-	    "GPIO_PIN_INTR_LOLEVEL (LOW LEVEL)",
-	    "GPIO_PIN_INTR_HILEVEL (HIGH LEVEL)"
-};
 
 void intr_callback(unsigned pin, unsigned level);
 void ICACHE_FLASH_ATTR intr_reattach(void)
@@ -508,7 +533,20 @@ void ICACHE_FLASH_ATTR intr_callback_t(void)
 
 void ICACHE_FLASH_ATTR intr_callback(unsigned pin, unsigned level)
 {
-	SetTimerTask (ext_int_timer, intr_callback_t, 1, 0);
+	INFO("INTERRUPT: GPIO%d = %d\r\n", pin_num[pin], level);
+
+	if(pin == 5) // Button
+	{
+		SetTimerTask (ext_int_timer, intr_callback_t, 1, 0);
+		return;
+	}
+	if(pin == 6) // MPR
+	{
+		i2c_mpr121_Start_Reading();
+		return;
+	}
+
+
 }
 
 
@@ -528,20 +566,17 @@ void ICACHE_FLASH_ATTR intr_callback(unsigned pin, unsigned level)
 
 
 
+void ICACHE_FLASH_ATTR NextionRXCommand(char* str) {
+if (!strcmp(str, "+"))
+	{
+	if (temporary_light_on_timer == 0) {temporary_light_on_timer=atoi (mFlag.tempOn_time)*60;}
+	else if (temporary_light_on_timer != 0) {temporary_light_on_timer=0;}
+	}
+else if (!strcmp(str, "-"))
+	{
 
+	}
 
-
-
-void ICACHE_FLASH_ATTR ProcessCommand(char* str) {
-
-INFO("\r\n UART0 Receive:%s\r\n",str);
-
-if (!strcmp(str, "+")) {
-INFO ("\r\n If validated\r\n");
-if (temporary_light_on_timer == 0) {temporary_light_on_timer=atoi (mFlag.tempOn_time)*60;}
-else if (temporary_light_on_timer != 0) {temporary_light_on_timer=0;}
-
-}
 }
 
 
@@ -589,7 +624,6 @@ uint8_t work_mode = 0;
 	if (GPIO_INPUT_GET(WIFI_Button_Pin))
 	{
 		SysCFG_Load(0);
-//		INFO ("\r\n Try Normal = %d \r\n", mFlag.try);
 
 		INFO("\r\nNormal mode\r\n");
 		WIFI_Connect(sysCfg.sta_ssid, sysCfg.sta_pwd, wifiConnectCb);
@@ -724,6 +758,10 @@ if(work_mode == 0)
 
 //	PIN_FUNC_SELECT(RELAY_MUX, RELAY_FUNC);
 
+//	SetTimerTask(mpr121_timer, i2c_mpr121_Init, 5000, 0);
+
+
+
 	SetTimerTask(BME280_timer_read, BME280_Start_Init, 5000, 0);
 
 //	======================================
@@ -733,24 +771,63 @@ if(work_mode == 0)
 
 
 	INFO ("\r\n External Int.\r\n");
-	gpio_pin = 5;
+
+	gpio_pin=esp_pin2pin[D5pin];
+//	gpio_pin = 5;
 	gpio_type = GPIO_PIN_INTR_POSEDGE;
 	if (set_gpio_mode(gpio_pin,  GPIO_INT, GPIO_PULLUP)) {
+#ifdef int_debug
 		INFO("GPIO%d set interrupt mode\r\n", pin_num[gpio_pin]);
+#endif
 		if (gpio_intr_init(gpio_pin, gpio_type)) {
+#ifdef int_debug
 			INFO("GPIO%d enable %s mode\r\n", pin_num[gpio_pin], gpio_type_desc[gpio_type]);
+#endif
 			gpio_intr_attach(intr_callback);
 		} else {
+#ifdef int_debug
 			INFO("Error: GPIO%d not enable %s mode\r\n", pin_num[gpio_pin], gpio_type_desc[gpio_type]);
+#endif
 		}
 	} else {
+#ifdef int_debug
 		INFO("Error: GPIO%d not set interrupt mode\r\n", pin_num[gpio_pin]);
+#endif
 	}
+
+
+
+
+/*
+	gpio_pin=esp_pin2pin[D6pin];
+	gpio_type = GPIO_PIN_INTR_NEGEDGE;
+	if (set_gpio_mode(gpio_pin,  GPIO_INT, GPIO_PULLUP)) {
+#ifdef int_debug
+		INFO("GPIO%d set interrupt mode\r\n", pin_num[gpio_pin]);
+#endif
+		if (gpio_intr_init(gpio_pin, gpio_type)) {
+#ifdef int_debug
+			INFO("GPIO%d enable %s mode\r\n", pin_num[gpio_pin], gpio_type_desc[gpio_type]);
+#endif
+			gpio_intr_attach(intr_callback);
+		} else {
+#ifdef int_debug
+			INFO("Error: GPIO%d not enable %s mode\r\n", pin_num[gpio_pin], gpio_type_desc[gpio_type]);
+#endif
+		}
+	} else {
+#ifdef int_debug
+		INFO("Error: GPIO%d not set interrupt mode\r\n", pin_num[gpio_pin]);
+#endif
+	}
+*/
 //	External interrupts
 //	======================================
 
 
 
+	BitBang_TLC5947(1, 7, 8, 6);
+	BitBang_TLC5947_begin();
 
 }
 else

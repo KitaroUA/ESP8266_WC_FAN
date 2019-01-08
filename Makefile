@@ -106,8 +106,10 @@ ifeq ("$(V)","1")
 Q :=
 vecho := @true
 else
-Q := @
-vecho := @echo
+Q :=
+vecho := @true
+#Q := @
+#vecho := @echo
 endif
 
 ifeq ("$(USE_OPENSDK)","yes")

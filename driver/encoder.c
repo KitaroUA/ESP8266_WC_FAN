@@ -1,7 +1,7 @@
 /*
  * encoder.c
  *
- *  Created on: 7 бер. 2017 р.
+ *  Created on: 7 пїЅпїЅпїЅ. 2017 пїЅ.
  *      Author: Kitaro
  */
 
@@ -21,7 +21,7 @@
 // GPIO_PIN_INTR_LOLEVEL - low level
 // GPIO_PIN_INTR_HILEVEL - high level
 // GPIO_PIN_INTR_DISABLE - disable interrupt
-
+/*
 const char *gpio_type_desc[] =
 {
 	    "GPIO_PIN_INTR_DISABLE (DISABLE INTERRUPT)",
@@ -31,13 +31,13 @@ const char *gpio_type_desc[] =
 	    "GPIO_PIN_INTR_LOLEVEL (LOW LEVEL)",
 	    "GPIO_PIN_INTR_HILEVEL (HIGH LEVEL)"
 };
-
+*/
 void ICACHE_FLASH_ATTR intr_reinit(void);
 
 
 os_timer_t intr_reinit_timer;
 
-
+/*
 
 
 void ICACHE_FLASH_ATTR intr_callback(unsigned pin, unsigned level)
@@ -81,7 +81,7 @@ void ICACHE_FLASH_ATTR encoder_gpio_init (void)
 	} else {
 		os_printf("Error: GPIO%d not set interrupt mode\r\n", pin_num[gpio_pin]);
 	}
-/*
+
 	gpio_pin = encoder_pin_2;
 	gpio_type = GPIO_PIN_INTR_ANYEDGE;
 	if (set_gpio_mode(gpio_pin, GPIO_PULLUP, GPIO_INT)) {
@@ -96,6 +96,7 @@ void ICACHE_FLASH_ATTR encoder_gpio_init (void)
 		os_printf("Error: GPIO%d not set interrupt mode\r\n", pin_num[gpio_pin]);
 	}
 */
+/*
 }
 
 
@@ -111,7 +112,7 @@ if (gpio_intr_init(gpio_pin, gpio_type))
 //	os_printf("GPIO%d enable %s mode\r\n", pin_num[gpio_pin], gpio_type_desc[gpio_type]);
 		gpio_intr_attach(intr_callback);
 	}
-/*
+
 	gpio_pin = encoder_pin_2;
 	gpio_type = GPIO_PIN_INTR_ANYEDGE;
 
@@ -120,7 +121,8 @@ if (gpio_intr_init(gpio_pin, gpio_type))
 //	os_printf("GPIO%d enable %s mode\r\n", pin_num[gpio_pin], gpio_type_desc[gpio_type]);
 		gpio_intr_attach(intr_callback);
 	}*/
-}
+
+//}
 
 
 

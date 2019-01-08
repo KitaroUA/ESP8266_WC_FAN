@@ -66,7 +66,7 @@
 #define i2c_mpr121_Init_Restart 5
 #define i2c_mpr121_Init_Error_Restart 5
 #define i2c_mpr121_Read_Restart 5
-#define i2c_mpr121_Reenable_delay 2
+#define i2c_mpr121_Reenable_delay 20
 #define i2c_mpr121_push_time_stage 100
 
 void i2c_mpr121_Init(void);
@@ -82,7 +82,7 @@ uint8 i2c_mpr121_buffer_data;
 
 
 os_timer_t mpr121_timer;
-
+os_timer_t mpr121_timer_int;
 
 
 
