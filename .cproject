@@ -55,12 +55,12 @@
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="IoT_Template.null.542142599" name="IoT_Template"/>
+		<project id="IoT_WC_FAN.null.542142599" name="IoT_WC_FAN"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="Default">
-			<resource resourceType="PROJECT" workspacePath="/IoT_Template"/>
+			<resource resourceType="PROJECT" workspacePath="/IoT_WC_FAN"/>
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">

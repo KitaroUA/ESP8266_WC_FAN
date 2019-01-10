@@ -20,65 +20,30 @@ int ICACHE_FLASH_ATTR tpl_options(HttpdConnData *connData, char *token, void **a
 
 	if (os_strcmp(token, "curTime")==0)
 	{
-		if (DS3231_Date[0] == 0)
-		{	//���� ������� ���� ������� - ������ �� ��������
-			os_strcpy(buff, "");
-		}
-		else
-		{
-			os_sprintf(cj, "%02x:%02x:%02x %02x.%02x.20%02x",  DS3231_Time[2], DS3231_Time[1], DS3231_Time[0], DS3231_Date[0], DS3231_Date[1], DS3231_Date[2]);
-			os_strcpy(buff, cj);
-		}
-	}
-	memset(&cj[0], 0, sizeof(cj));
-
-
-
-	if (os_strcmp(token, "v_onT")==0) {
-			uint16 m16 = atoi (mFlag.on_time);
-			uint8 h = m16/60;
-			uint8 m = m16 - h*60;
-			os_sprintf(cj,"%02d:%02d", h, m);
-			os_strcpy(buff,cj);
-
-			m16 = atoi (mFlag.off_time);
-			h = m16/60;
-			m = m16 - h*60;
-			os_sprintf(cj," - %02d:%02d", h, m);
-			os_strcat(buff,cj);
-
+		/*
+			if (DS3231_Date[0] == 0)
+			{	//���� ������� ���� ������� - ������ �� ��������
+				os_strcpy(buff, "");
+			}
+			else
+			{
+				os_sprintf(cj, "%02x:%02x:%02x %02x.%02x.20%02x",  DS3231_Time[2], DS3231_Time[1], DS3231_Time[0], DS3231_Date[0], DS3231_Date[1], DS3231_Date[2]);
+				os_strcpy(buff, cj);
+			}*/
 	}
 	memset(&cj[0], 0, sizeof(cj));
 
 
 
 
-	if (os_strcmp(token, "minLight")==0) {
-		if ((char *)mFlag.minLight == "" )
-		{
-			os_strcpy(buff, "");
-		}
-		else
-		{
-			os_sprintf(cj,"%d", mFlag.minLight);
-			os_strcpy(buff,cj);
-		}
-	}
-	memset(&cj[0], 0, sizeof(cj));
+
+
+
 
 	if (os_strcmp(token,"v_tempOn")==0)
 	{
 		os_strcpy(cj, "\"");
 		os_strcat(cj, mFlag.tempOn_time);
-		os_strcat(cj, "\"");
-		os_sprintf(buff, cj);
-	}
-	memset(&cj[0], 0, sizeof(cj));
-
-	if (os_strcmp(token,"v_tempOff")==0)
-	{
-		os_strcpy(cj, "\"");
-		os_strcat(cj, mFlag.tempOff_time);
 		os_strcat(cj, "\"");
 		os_sprintf(buff, cj);
 	}

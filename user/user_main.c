@@ -196,31 +196,6 @@ HttpdBuiltInUrl builtInUrls[]={
 	{"/set_ntp/PC_Time.cgi", cgi_PC_Time, NULL},
 
 
-/*
- * set_off_time page
- */
-//	{"/set_off_time", cgiRedirect, "/set_off_time/set_off_time.tpl"},
-//	{"/set_off_time/", cgiRedirect, "/set_off_time/set_off_time.tpl"},
-	{"/set_off_time/set_off_time.tpl", cgiEspFsTemplate, tpl_set_off_time},
-	{"/set_off_time/set_off_time.cgi", cgi_set_off_time, NULL},
-
-
-/*
- * set_on_time page
- */
-//	{"/set_on_time", cgiRedirect, "/set_on_time/set_on_time.tpl"},
-//	{"/set_on_time/", cgiRedirect, "/set_on_time/set_on_time.tpl"},
-	{"/set_on_time/set_on_time.tpl", cgiEspFsTemplate, tpl_set_on_time},
-	{"/set_on_time/set_on_time.cgi", cgi_set_on_time, NULL},
-
-
-/*
- * set_temp_off page
- */
-//	{"/set_temp_off", cgiRedirect, "/set_temp_off/set_temp_off.tpl"},
-//	{"/set_temp_off/", cgiRedirect, "/set_temp_off/set_temp_off.tpl"},
-	{"/set_temp_off/set_temp_off.tpl", cgiEspFsTemplate, tpl_set_temp_off},
-	{"/set_temp_off/set_temp_off.cgi", cgi_set_temp_off, NULL},
 
 
 /*
@@ -233,28 +208,6 @@ HttpdBuiltInUrl builtInUrls[]={
 
 
 
-/*
- * Temperature selector page
- */
-	//	{"/set_temp_off", cgiRedirect, "/set_temp_off/set_temp_off.tpl"},
-	//	{"/set_temp_off/", cgiRedirect, "/set_temp_off/set_temp_off.tpl"},
-		{"/temperature_selector/temperature_selector.tpl", cgiEspFsTemplate, tpl_temperature_selector},
-		{"/temperature_selector/Temperature_options_1.cgi", cgi_temperature_selector_1, NULL},
-//		{"/temperature_selector/temperature_selector_1.js", cgiEspFsTemplate, js_temperature_selector_1},
-		{"/temperature_selector/temperature_selector.var", cgiEspFsTemplate, var_temperature_selector},
-
-
-
-
-
-/*
- * Time Range selector page
- */
-	//	{"/set_temp_off", cgiRedirect, "/set_temp_off/set_temp_off.tpl"},
-	//	{"/set_temp_off/", cgiRedirect, "/set_temp_off/set_temp_off.tpl"},
-		{"/working_time_selector/working_time_selector.tpl", cgiEspFsTemplate, tpl_working_time_selector},
-		{"/working_time_selector/working_time_selector_1.cgi", cgi_working_time_selector_1, NULL},
-//		{"/working_time_selector/working_time_selector_1.js", cgiEspFsTemplate, js_working_time_selector_1},
 
 
 /*
@@ -275,14 +228,6 @@ HttpdBuiltInUrl builtInUrls[]={
 			{"/set_ip/set_ip.tpl", cgiEspFsTemplate, tpl_set_ip},
 			{"/set_ip/set_ip_1.cgi", cgi_set_ip_1, NULL},
 			{"/set_ip/set_ip_2.cgi", cgi_set_ip_2, NULL},
-
-
-/*
- * Some test pages
- */
-
-			{"/slider.tpl", cgiEspFsTemplate, tpl_slider},
-			{"/set_slider.cgi",cgi_set_slider, NULL},
 
 
 
@@ -499,88 +444,35 @@ void ICACHE_FLASH_ATTR user_rf_pre_init(void)
 
 
 
+#define DELAY 2000 /* milliseconds */
+
+LOCAL os_timer_t dht22_timer;
+
+DHT_Sensor sensor;
 
 
 
-
-
-
-
-os_timer_t ext_int_timer;
-
-extern uint8_t pin_num[GPIO_PIN_NUM];
-
-
-void intr_callback(unsigned pin, unsigned level);
-void ICACHE_FLASH_ATTR intr_reattach(void)
+LOCAL void ICACHE_FLASH_ATTR dht22_cb(void *arg)
 {
-	INFO("\r\nINTERRUPT: GPIO%d reattached \r\n", WIFI_Button_Pin);
-	gpio_intr_init(WIFI_Button_Pin,GPIO_PIN_INTR_POSEDGE);
-	gpio_intr_attach(intr_callback);
+	static uint8_t i;
+	DHT_Sensor_Data data;
+	uint8_t pin;
+	os_timer_disarm(&dht22_timer);
 
-}
-
-
-void ICACHE_FLASH_ATTR intr_callback_t(void)
-{
-	INFO("\r\nINTERRUPT: GPIO%d = %d\r\n", WIFI_Button_Pin, GPIO_INPUT_GET(WIFI_Button_Pin));
-	gpio_intr_deattach(WIFI_Button_Pin);
-	SetTimerTask (ext_int_timer, intr_reattach, 50, 0);
-
-
-}
-
-
-void ICACHE_FLASH_ATTR intr_callback(unsigned pin, unsigned level)
-{
-	INFO("INTERRUPT: GPIO%d = %d\r\n", pin_num[pin], level);
-
-	if(pin == 5) // Button
+	// One DHT22 sensor
+	pin = sensor.pin;
+	if (DHTRead(&sensor, &data))
 	{
-		SetTimerTask (ext_int_timer, intr_callback_t, 1, 0);
-		return;
-	}
-	if(pin == 6) // MPR
-	{
-		i2c_mpr121_Start_Reading();
-		return;
+	    char buff[20];
+	    INFO("GPIO%d\r\n", pin);
+	    INFO("Temperature: %s *C\r\n", DHTFloat2String(buff, data.temperature));
+	    INFO("Humidity: %s %%\r\n", DHTFloat2String(buff, data.humidity));
+	} else {
+	    INFO("Failed to read temperature and humidity sensor on GPIO%d\n", pin);
 	}
 
-
+	os_timer_arm(&dht22_timer, DELAY, 1);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void ICACHE_FLASH_ATTR NextionRXCommand(char* str) {
-if (!strcmp(str, "+"))
-	{
-	if (temporary_light_on_timer == 0) {temporary_light_on_timer=atoi (mFlag.tempOn_time)*60;}
-	else if (temporary_light_on_timer != 0) {temporary_light_on_timer=0;}
-	}
-else if (!strcmp(str, "-"))
-	{
-
-	}
-
-}
-
-
-
 
 
 
@@ -633,18 +525,6 @@ uint8_t work_mode = 0;
 	else
 	{
 		INFO("\r\nSetup mode\r\n");
-		struct ip_info ipinfo;
-			wifi_softap_dhcps_stop();
-			ipinfo.ip=sysCfg.apipinfo.ip;
-			ipinfo.gw=sysCfg.apipinfo.gw;
-			ipinfo.netmask=sysCfg.apipinfo.netmask;
-			wifi_set_ip_info(SOFTAP_IF, &ipinfo);
-			wifi_softap_dhcps_start();
-			wifi_set_opmode(STATIONAP_MODE);
-
-		builtInUrls[0].cgiArg = "/index_s.tpl";
-		work_mode=1;
-
 
 
 		mFlag.try++;
@@ -659,7 +539,7 @@ uint8_t work_mode = 0;
 		 */
 
 			Default_CFG();
-			SysCFG_Load(1);
+//			SysCFG_Load(1);
 
 		/* ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 		 * |||||||||||||||||||||||||
@@ -667,6 +547,22 @@ uint8_t work_mode = 0;
 		 */
 		mFlag.try=0;
 		AddCFG_Save();
+
+
+		struct ip_info ipinfo;
+			wifi_softap_dhcps_stop();
+			ipinfo.ip=sysCfg.apipinfo.ip;
+			ipinfo.gw=sysCfg.apipinfo.gw;
+			ipinfo.netmask=sysCfg.apipinfo.netmask;
+			wifi_set_ip_info(SOFTAP_IF, &ipinfo);
+			wifi_softap_dhcps_start();
+			wifi_set_opmode(STATIONAP_MODE);
+
+		builtInUrls[0].cgiArg = "/index_s.tpl";
+		work_mode=1;
+
+
+
 
 
 	}
@@ -746,88 +642,21 @@ if(work_mode == 0)
 
 	i2c_init();
 
-	DS3231_Init();
+//	DS3231_Init();
 	SetTimerTask (circular_timer, init_circular_timer_proc, 5000, 0);
-//	i2c_SHT3X_Test();
-	i2c_SSD1306_Init();
-
-	SetTimerTask(ds18b20_timer, ds18b20_search, 1500, 0);
-//	SetTimerTask(PCA9685_timer, i2c_PCA9685_Init, 2, 0);
-
-	i2c_PCF8574_enabled = 1;
-
-//	PIN_FUNC_SELECT(RELAY_MUX, RELAY_FUNC);
-
-//	SetTimerTask(mpr121_timer, i2c_mpr121_Init, 5000, 0);
 
 
+	PIN_FUNC_SELECT(RELAY_MUX, RELAY_FUNC);
 
-	SetTimerTask(BME280_timer_read, BME280_Start_Init, 5000, 0);
-
-//	======================================
-//	External interrupts
-	GPIO_INT_TYPE gpio_type;
-	uint8_t gpio_pin;
-
-
-	INFO ("\r\n External Int.\r\n");
-
-	gpio_pin=esp_pin2pin[D5pin];
-//	gpio_pin = 5;
-	gpio_type = GPIO_PIN_INTR_POSEDGE;
-	if (set_gpio_mode(gpio_pin,  GPIO_INT, GPIO_PULLUP)) {
-#ifdef int_debug
-		INFO("GPIO%d set interrupt mode\r\n", pin_num[gpio_pin]);
-#endif
-		if (gpio_intr_init(gpio_pin, gpio_type)) {
-#ifdef int_debug
-			INFO("GPIO%d enable %s mode\r\n", pin_num[gpio_pin], gpio_type_desc[gpio_type]);
-#endif
-			gpio_intr_attach(intr_callback);
-		} else {
-#ifdef int_debug
-			INFO("Error: GPIO%d not enable %s mode\r\n", pin_num[gpio_pin], gpio_type_desc[gpio_type]);
-#endif
-		}
-	} else {
-#ifdef int_debug
-		INFO("Error: GPIO%d not set interrupt mode\r\n", pin_num[gpio_pin]);
-#endif
-	}
+	// One DHT22 sensor
+		// Pin number 4 = GPIO2
+		sensor.pin = D3pin;
+		sensor.type = DHT22;
+		INFO("DHT22 init on GPIO%d\r\n", sensor.pin);
+		DHTInit(&sensor);
 
 
 
-
-/*
-	gpio_pin=esp_pin2pin[D6pin];
-	gpio_type = GPIO_PIN_INTR_NEGEDGE;
-	if (set_gpio_mode(gpio_pin,  GPIO_INT, GPIO_PULLUP)) {
-#ifdef int_debug
-		INFO("GPIO%d set interrupt mode\r\n", pin_num[gpio_pin]);
-#endif
-		if (gpio_intr_init(gpio_pin, gpio_type)) {
-#ifdef int_debug
-			INFO("GPIO%d enable %s mode\r\n", pin_num[gpio_pin], gpio_type_desc[gpio_type]);
-#endif
-			gpio_intr_attach(intr_callback);
-		} else {
-#ifdef int_debug
-			INFO("Error: GPIO%d not enable %s mode\r\n", pin_num[gpio_pin], gpio_type_desc[gpio_type]);
-#endif
-		}
-	} else {
-#ifdef int_debug
-		INFO("Error: GPIO%d not set interrupt mode\r\n", pin_num[gpio_pin]);
-#endif
-	}
-*/
-//	External interrupts
-//	======================================
-
-
-
-	BitBang_TLC5947(1, 7, 8, 6);
-	BitBang_TLC5947_begin();
 
 }
 else

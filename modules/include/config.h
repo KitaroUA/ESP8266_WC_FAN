@@ -75,19 +75,13 @@ typedef struct {
 
 typedef struct {
     uint8 flag;
-    uint8 on_time[5];
-	uint8 off_time[5];
-	uint8 tempOff_time[5];
-	uint8 tempOn_time[5];
-	uint32 minLight;
-	int8 timezone;
+	uint8 tempOn_time[3];
+	int8  timezone;
 	uint8 hostname[30];
 	uint8 ntp[30];
 	uint8 ntp_flag;
 	uint8 dst_flag;
 	uint8 dst_active;
-	Temperature_selector_struct Temperature_selector_array[number_of_temperature_options_channels];
-	uint8 Temperature_display_array[2] ;
 	uint8 mqtt_server[30];
 	uint8 mqtt_task_enabled;
 	uint8 try;

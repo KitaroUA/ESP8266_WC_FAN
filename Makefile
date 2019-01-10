@@ -40,7 +40,7 @@ USE_OPENSDK?=no
 
 #Esptool.py path and port
 ESPTOOL ?= $(SDK_TOOLS)/esptool.exe
-ESPPORT ?= COM8
+ESPPORT ?= COM3
 #ESPDELAY indicates seconds to wait between flashing the two binary images
 ESPDELAY	?= 3
 ESPBAUD		?= 460800
@@ -64,7 +64,8 @@ LIBS += esphttpd
 CFLAGS		= -Os -ggdb -std=gnu99 -Werror -Wpointer-arith -Wundef -Wall -Wl,-EL -fno-inline-functions \
 		-nostdlib  -mtext-section-literals  -D__ets__  \
 		-Wno-address -Wno-implicit-function-declaration -DICACHE_FLASH -mlongcalls \
-		-Wswitch -Wno-unused-function -Wno-parentheses -Wno-unused-variable -Wno-pointer-sign 
+		-Wswitch -Wno-unused-function -Wno-parentheses -Wno-unused-variable -Wno-pointer-sign \
+		-Wno-uninitialized
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static

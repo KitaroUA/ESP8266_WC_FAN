@@ -14,23 +14,7 @@
 #include "driver/uart.h"
 #include "driver/i2c.h"
 #include "driver/my_i2c.h"
-#include "driver/IIC_DS3231.h"
-#include "driver/IIC_PCF8574.h"
-//#include "driver/hd44780.h"
-#include "driver/IIC_SHT3X.h"
-#include "driver/IIC_PCA9685.h"
-#include "driver/IIC_mpr121.h"
-
-
-#include "driver/DS18B20.h"
-
-
-#include "driver/IIC_SSD1306.h"
-
-#include "driver/IIC_mpr121.h"
-
-
-
+//#include "driver/IIC_DS3231.h"
 uint8 global_light_status;
 
 
@@ -235,33 +219,11 @@ MQTT_Client mqttClient;
 
 uint32 	uptime;
 
-#include "driver/bme280.h"
-os_timer_t bme280_sensor_timer;
-
-
-#include "driver/ws2812.h"
-
-
-
-#include "driver/IIC_BH1750FVI.h"
-
-
-
-
-
-
-#include "driver/nextion_var.h"
-
-
+#include "driver/dht22.h"
+#include "driver/ds1307.h"
 
 
 #include "driver/gpio16.h"
-
-
-
-
-#include "driver/BitBang_TLC5947.h"
-
 
 
 

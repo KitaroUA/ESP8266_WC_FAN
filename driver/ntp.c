@@ -216,7 +216,7 @@ static void ICACHE_FLASH_ATTR ntp_udp_recv(void *arg, char *pdata, unsigned shor
 
 
 
-
+/*
 
 	DS3231_Date_to_Write[0] = decToBcd(dt->tm_sec);
 	DS3231_Date_to_Write[1] = decToBcd(dt->tm_min);
@@ -226,7 +226,9 @@ static void ICACHE_FLASH_ATTR ntp_udp_recv(void *arg, char *pdata, unsigned shor
 	DS3231_Date_to_Write[5] = decToBcd(dt->tm_mon + 1);
 	DS3231_Date_to_Write[6] = decToBcd(dt->tm_year - 100);
 	DS3231_Set_Date();
-
+*/
+	time2write = dt;
+	ds1307_setTime();
 	// clean up connection
 	if (pCon) {
 		espconn_delete(pCon);

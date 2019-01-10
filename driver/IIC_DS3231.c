@@ -1,7 +1,7 @@
 /*
  * IIC_DS3231.c
  *
- *  Created on: 2 лют. 2017 р.
+ *  Created on: 2 пїЅпїЅпїЅ. 2017 пїЅ.
  *      Author: Kitaro
  */
 
@@ -16,10 +16,10 @@ uint8_t DS3231_Time[3];
 uint8_t DS3231_Date[4];
 uint16_t DS3231_Year_Base = 2000;
 
-uint8_t DS3231_Date_to_Write[7];// Змінна для запису дати в годинник. Секунди, хвилини, години, день тижня, день, місяць, рік.
+uint8_t DS3231_Date_to_Write[7];// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ.
 uint8_t DS3231_ADDRESS = 0xD0;
-uint8_t DS3231_Flags = 0;	// 0bxxx1xxxxx - Закінчилась ініціалізація одного модуля
-							// 0bx1xxxxxxx - Дані отримані
+uint8_t DS3231_Flags = 0;	// 0bxxx1xxxxx - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+							// 0bx1xxxxxxx - пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 
 
@@ -46,12 +46,12 @@ uint8 buff[2];
 buff[0] = DS3231_init_1;
 buff[1] = DS3231_init_2;
 
-	if (!i2c_Write_Addr_Buffer(DS3231_ADDRESS,DS3231_control_register_address,buff,2,DS3231_Inited))	// Если шина занята
+	if (!i2c_Write_Addr_Buffer(DS3231_ADDRESS,DS3231_control_register_address,buff,2,DS3231_Inited))	// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	{
 
 		os_timer_disarm (&DS3231_timer_set);
 		os_timer_setfn (&DS3231_timer_set, (os_timer_func_t *)DS3231_Init, NULL);
-		os_timer_arm(&DS3231_timer_set, 2, 0);	// Повторить попытку через 2мс
+		os_timer_arm(&DS3231_timer_set, 2, 0);	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ 2пїЅпїЅ
 	}
 }
 
@@ -59,19 +59,19 @@ buff[1] = DS3231_init_2;
 static void ICACHE_FLASH_ATTR DS3231_Inited(void)
 	{
 
-		i2c_Do &= i2c_Free;			// Освобождаем шину
+		i2c_Do &= i2c_Free;			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 
-		if(i2c_Do & (i2c_ERR_NA|i2c_ERR_BF))	// Если запись не удалась
+		if(i2c_Do & (i2c_ERR_NA|i2c_ERR_BF))	// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		{
 			os_timer_disarm (&DS3231_timer_set);
 			os_timer_setfn (&DS3231_timer_set, (os_timer_func_t *)DS3231_Init, NULL);
-			os_timer_arm(&DS3231_timer_set, 2, 0);	// Повторить попытку через 2мс
+			os_timer_arm(&DS3231_timer_set, 2, 0);	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ 2пїЅпїЅ
 		}
 		else
 		{
 			os_timer_disarm (&DS3231_timer_read);
 			os_timer_setfn (&DS3231_timer_read, (os_timer_func_t *)DS3231_Read, NULL);
-			os_timer_arm(&DS3231_timer_read, 1000, 0);	// Запускаємо процедуру читання
+			os_timer_arm(&DS3231_timer_read, 1000, 0);	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		}
 	}
 
@@ -79,47 +79,47 @@ static void ICACHE_FLASH_ATTR DS3231_Inited(void)
 
 void ICACHE_FLASH_ATTR DS3231_Read (void)
 {
-	if (!i2c_Read_Addr_Buffer(DS3231_ADDRESS, 0x00, 7, DS3231_Readed) )      // Читаем
+	if (!i2c_Read_Addr_Buffer(DS3231_ADDRESS, 0x00, 7, DS3231_Readed) )      // пїЅпїЅпїЅпїЅпїЅпїЅ
 	{
 		os_timer_disarm (&DS3231_timer_read);
 		os_timer_setfn (&DS3231_timer_read, (os_timer_func_t *)DS3231_Read, NULL);
-		os_timer_arm(&DS3231_timer_read, 2, 0);	// Повторить попытку через 2мс
+		os_timer_arm(&DS3231_timer_read, 2, 0);	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ 2пїЅпїЅ
 	}
 }
 
 
 static void ICACHE_FLASH_ATTR DS3231_Readed (void)
 {
-	i2c_Do &= i2c_Free;			// Освобождаем шину
+	i2c_Do &= i2c_Free;			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 
-	if(i2c_Do & (i2c_ERR_NA|i2c_ERR_BF))	// Если запись не удалась
+	if(i2c_Do & (i2c_ERR_NA|i2c_ERR_BF))	// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	{
 		os_timer_disarm (&DS3231_timer_read);
 		os_timer_setfn (&DS3231_timer_read, (os_timer_func_t *)DS3231_Read, NULL);
-		os_timer_arm(&DS3231_timer_read, 2, 0);	// Повторить попытку через 2мс
+		os_timer_arm(&DS3231_timer_read, 2, 0);	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ 2пїЅпїЅ
 	}
 	else
 	{
 
-		DS3231_Time[0] = i2c_Buffer[0];         		// Иначе считаный байт из буфера копируем в переменную
-		DS3231_Time[1] = i2c_Buffer[1];         		// Иначе считаный байт из буфера копируем в переменную
+		DS3231_Time[0] = i2c_Buffer[0];         		// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		DS3231_Time[1] = i2c_Buffer[1];         		// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		DS3231_Time[2] = i2c_Buffer[2];
 		DS3231_Date[0] = i2c_Buffer[4];
-		DS3231_Date[1] = i2c_Buffer[5]&0b01111111;		//	Старши біт - століття
-		DS3231_Date[2] = i2c_Buffer[6];	//	Рік, від 0 до 3
-		DS3231_Date[3] = i2c_Buffer[3];	//	День тиждня від 0 до 6
+		DS3231_Date[1] = i2c_Buffer[5]&0b01111111;		//	пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ - пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		DS3231_Date[2] = i2c_Buffer[6];	//	РіпїЅ, пїЅпїЅ 0 пїЅпїЅ 3
+		DS3231_Date[3] = i2c_Buffer[3];	//	пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 0 пїЅпїЅ 6
 
 
 		os_timer_disarm (&DS3231_timer_read);
 		os_timer_setfn (&DS3231_timer_read, (os_timer_func_t *)DS3231_Read, NULL);
-		os_timer_arm(&DS3231_timer_read, 1000, 0);	// Запускаємо процедуру читання
+		os_timer_arm(&DS3231_timer_read, 1000, 0);	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 	}
 }
 
 void ICACHE_FLASH_ATTR DS3231_Set_Date(void)
 {
-	os_timer_disarm (&DS3231_timer_read); //	Зупиняємо поточні читання дати
+	os_timer_disarm (&DS3231_timer_read); //	пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 
 /*
 	DS3231_Date_to_Write[0] = 0x00;
@@ -139,11 +139,11 @@ void ICACHE_FLASH_ATTR DS3231_Set_Date(void)
 	DS3231_send_buffer[5] = DS3231_Date_to_Write[5];
 	DS3231_send_buffer[6] = DS3231_Date_to_Write[6];
 */
-	if (!i2c_Write_Addr_Buffer(DS3231_ADDRESS,DS3231_date_register_address,DS3231_Date_to_Write,7,DS3231_Date_Set))	// Если шина занята
+	if (!i2c_Write_Addr_Buffer(DS3231_ADDRESS,DS3231_date_register_address,DS3231_Date_to_Write,7,DS3231_Date_Set))	// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	{
 		os_timer_disarm (&DS3231_timer_set);
 		os_timer_setfn (&DS3231_timer_set, (os_timer_func_t *)DS3231_Set_Date, NULL);
-		os_timer_arm(&DS3231_timer_set, 5, 0);	// Повторить попытку через 2мс
+		os_timer_arm(&DS3231_timer_set, 5, 0);	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ 2пїЅпїЅ
 	}
 
 
@@ -156,19 +156,19 @@ void ICACHE_FLASH_ATTR DS3231_Set_Date(void)
 static void ICACHE_FLASH_ATTR DS3231_Date_Set(void)
 {
 
-	i2c_Do &= i2c_Free;			// Освобождаем шину
+	i2c_Do &= i2c_Free;			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 
-	if(i2c_Do & (i2c_ERR_NA|i2c_ERR_BF))	// Если запись не удалась
+	if(i2c_Do & (i2c_ERR_NA|i2c_ERR_BF))	// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	{
 		os_timer_disarm (&DS3231_timer_set);
 		os_timer_setfn (&DS3231_timer_set, (os_timer_func_t *)DS3231_Set_Date, NULL);
-		os_timer_arm(&DS3231_timer_set, 2, 0);	// Повторить попытку через 2мс
+		os_timer_arm(&DS3231_timer_set, 2, 0);	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ 2пїЅпїЅ
 	}
 	else
 	{
 		os_timer_disarm (&DS3231_timer_read);
 		os_timer_setfn (&DS3231_timer_read, (os_timer_func_t *)DS3231_Read, NULL);
-		os_timer_arm(&DS3231_timer_read, 1000, 0);	// Запускаємо процедуру читання
+		os_timer_arm(&DS3231_timer_read, 1000, 0);	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 
 	}

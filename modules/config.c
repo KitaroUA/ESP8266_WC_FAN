@@ -83,8 +83,8 @@ SysCFG_Load(uint8 RLoad)
 		spi_flash_read((CFG_LOCATION + 1) * SPI_FLASH_SEC_SIZE,
 					   (uint32 *)&sysCfg, sizeof(SYSCFG));
 	}
-/*
-	if( (sysCfg.cfg_holder != CFG_HOLDER) | (RLoad == 1)){
+
+/*	if((RLoad == 1)){
 		os_memset(&sysCfg, 0x00, sizeof sysCfg);
 
 
@@ -196,49 +196,13 @@ void ICACHE_FLASH_ATTR Default_CFG(void)
 
 
 
-	os_sprintf(mFlag.on_time, "%s", "0540");
-	os_sprintf(mFlag.off_time, "%s", "1320");
-	os_sprintf(mFlag.tempOff_time, "%s", "30");
 	os_sprintf(mFlag.tempOn_time, "%s", "45");
-	mFlag.minLight = 25000;
 	os_sprintf(mFlag.hostname, "ESP_IoT_04001");
 	os_sprintf(mFlag.ntp, "0.ua.pool.ntp.org");
 	mFlag.timezone = 2;
 	mFlag.ntp_flag=1;
 	mFlag.dst_flag=1;
 	mFlag.dst_active=1;
-
-
-	mFlag.Temperature_selector_array[0].temparture_sensor=1;
-	mFlag.Temperature_selector_array[0].control_channel=1;
-	mFlag.Temperature_selector_array[0].on_temperature=255000;
-	mFlag.Temperature_selector_array[0].off_temperature=265000;
-	mFlag.Temperature_selector_array[0].lower_dimmer_value=0xFF;
-	mFlag.Temperature_selector_array[0].upper_dimmer_value=0xFF;
-
-	mFlag.Temperature_selector_array[1].temparture_sensor=0;
-	mFlag.Temperature_selector_array[1].control_channel=103;
-	mFlag.Temperature_selector_array[1].on_temperature=265000;
-	mFlag.Temperature_selector_array[1].off_temperature=275000;
-	mFlag.Temperature_selector_array[1].lower_dimmer_value=10;
-	mFlag.Temperature_selector_array[1].upper_dimmer_value=240;
-
-	mFlag.Temperature_selector_array[2].temparture_sensor=0;
-	mFlag.Temperature_selector_array[2].control_channel=temperature_options_off;
-	mFlag.Temperature_selector_array[2].on_temperature=275000;
-	mFlag.Temperature_selector_array[2].off_temperature=285000;
-	mFlag.Temperature_selector_array[2].lower_dimmer_value=0xFF;
-	mFlag.Temperature_selector_array[2].upper_dimmer_value=0xFF;
-
-	mFlag.Temperature_selector_array[3].temparture_sensor=1;
-	mFlag.Temperature_selector_array[3].control_channel=3;
-	mFlag.Temperature_selector_array[3].on_temperature=285000;
-	mFlag.Temperature_selector_array[3].off_temperature=295000;
-	mFlag.Temperature_selector_array[3].lower_dimmer_value=0xFF;
-	mFlag.Temperature_selector_array[3].upper_dimmer_value=0xFF;
-
-	 mFlag.Temperature_display_array[0]=0;
-	 mFlag.Temperature_display_array[1]=1;
 
 	 os_sprintf(mFlag.mqtt_server,"%s","192.168.104.100");
 

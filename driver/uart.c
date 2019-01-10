@@ -116,7 +116,6 @@ uart1_write_char(char c)
  * Parameters   : void *para - point to ETS_UART_INTR_ATTACH's arg
  * Returns      : NONE
 *******************************************************************************/
-extern void NextionRXCommand(char* str);
 LOCAL void uart0_rx_intr_handler(void *para)
 {
     /* uart0 and uart1 intr combine togther, when interrupt occur, see reg 0x3ff20020, bit2, bit0 represents
@@ -151,7 +150,7 @@ LOCAL void uart0_rx_intr_handler(void *para)
 				uint8 loop;
 				for (loop = 0; loop < len; loop++) str[loop] = uart0_rx_one_char();
 				str[len] = '\0';
-				NextionRXCommand(str);
+//				NextionRXCommand(str);
 				os_free(str);
 			}
 

@@ -223,48 +223,14 @@ int ICACHE_FLASH_ATTR cgi_index_get_data(HttpdConnData *connData)
 				{
 					char cj[80];
 
-					if(os_strcmp("DS_temperature",buff)==0)
-					{
-					os_sprintf(cj, "Температура в акваріумі: %d.%02d°",ds18b20_temperature_arrey[mFlag.Temperature_display_array[0]]/10000,(abs(ds18b20_temperature_arrey[mFlag.Temperature_display_array[0]])%10000)/100);
-					if (ds18b20_amount_of_devices > 1)
-					{
-						os_sprintf(cj,"Температура в акваріумі: %d.%02d°<br>Температура зовні: %d.%02d°<br>Освітленність: %d лк",\
-				ds18b20_temperature_arrey[mFlag.Temperature_display_array[0]]/10000,(abs(ds18b20_temperature_arrey[mFlag.Temperature_display_array[0]])%10000)/100,\
-				ds18b20_temperature_arrey[mFlag.Temperature_display_array[1]]/10000,(abs(ds18b20_temperature_arrey[mFlag.Temperature_display_array[1]])%10000)/100,\
-				i2c_BH1750FVI_Illuminance);
-					}
-					os_strcpy(buff,cj);
-					}
-					memset(&cj[0], 0, sizeof(cj));
 
 					if(os_strcmp("current_time",buff)==0)
 					{
-					os_sprintf(cj, "%02x:%02x:%02x<br>%02x.%02x.20%02x",  DS3231_Time[2], DS3231_Time[1], DS3231_Time[0], DS3231_Date[0], DS3231_Date[1], DS3231_Date[2]);
+//					os_sprintf(cj, "%02x:%02x:%02x<br>%02x.%02x.20%02x",  DS3231_Time[2], DS3231_Time[1], DS3231_Time[0], DS3231_Date[0], DS3231_Date[1], DS3231_Date[2]);
 					os_strcpy(buff, cj);
 					}
 					memset(&cj[0], 0, sizeof(cj));
 
-					if(os_strcmp("working_time",buff)==0)
-					{
-						uint16 n16 = atoi (mFlag.on_time);
-						uint8 nh = n16/60;
-						uint8 nm = n16 - nh*60;
-						uint16 f16 = atoi (mFlag.off_time);
-						uint8 fh = f16/60;
-						uint8 fm = f16 - fh*60;
-
-						if ( (atoi(mFlag.on_time)) < (atoi(mFlag.off_time)))
-						{
-							os_sprintf(cj,"Режим роботи: %02d:%02d - %02d:%02d",nh,nm,fh,fm);
-							os_strcpy(buff, cj);
-						}
-						else
-						{
-							os_sprintf(cj,"Режим роботи: 00:00 - %02d:%02d, %02d:%02d - 23:59",fh,fm,nh,nm);
-							os_strcpy(buff, cj);
-						}
-					}
-					memset(&cj[0], 0, sizeof(cj));
 
 					if (os_strcmp("up_time",buff)==0)
 					{
@@ -295,97 +261,19 @@ int ICACHE_FLASH_ATTR cgi_index_get_data(HttpdConnData *connData)
 					if (os_strcmp("get_data",buff)==0)
 					{
 						//	time
-						os_sprintf(cj, "%02x:%02x:%02x",  DS3231_Time[2], DS3231_Time[1], DS3231_Time[0]);
+//						os_sprintf(cj, "%02x:%02x:%02x",  DS3231_Time[2], DS3231_Time[1], DS3231_Time[0]);
 						os_strcpy(buff,cj);
 						os_strcat(buff,";");
 						memset(&cj[0], 0, sizeof(cj));
 
 						//	date
-						os_sprintf(cj, "%02x.%02x.20%02x",   DS3231_Date[0], DS3231_Date[1], DS3231_Date[2]);
-						os_strcat(buff, cj);
-						os_strcat(buff,";");
-						memset(&cj[0], 0, sizeof(cj));
-
-						//working_hr
-						uint16 n16 = atoi (mFlag.on_time);
-						uint8 nh = n16/60;
-						uint8 nm = n16 - nh*60;
-						uint16 f16 = atoi (mFlag.off_time);
-						uint8 fh = f16/60;
-						uint8 fm = f16 - fh*60;
-
-						if ( (atoi(mFlag.on_time)) < (atoi(mFlag.off_time)))
-						{
-							os_sprintf(cj,"%02d:%02d - %02d:%02d",nh,nm,fh,fm);
-							os_strcat(buff, cj);
-							os_strcat(buff,";");
-						}
-						else
-						{
-							os_sprintf(cj,"00:00 - %02d:%02d, %02d:%02d - 23:59",fh,fm,nh,nm);
-							os_strcat(buff, cj);
-							os_strcat(buff,";");
-						}
-						memset(&cj[0], 0, sizeof(cj));
-
-						//temper_DS_1
-						os_sprintf(cj, "%d.%02d°",ds18b20_temperature_arrey[mFlag.Temperature_display_array[0]]/10000,(abs(ds18b20_temperature_arrey[mFlag.Temperature_display_array[0]])%10000)/100);
-						os_strcat(buff, cj);
-						os_strcat(buff,";");
-						memset(&cj[0], 0, sizeof(cj));
-
-						//temper_DS_2
-						os_sprintf(cj, "%d.%02d°",ds18b20_temperature_arrey[mFlag.Temperature_display_array[1]]/10000,(abs(ds18b20_temperature_arrey[mFlag.Temperature_display_array[1]])%10000)/100);
-						os_strcat(buff, cj);
-						os_strcat(buff,";");
-						memset(&cj[0], 0, sizeof(cj));
-
-						//	temper_BM
-						os_sprintf(cj,"%d.%02u",bme280_temperature / 100, bme280_temperature % 100);
-						os_strcat(buff, cj);
-						os_strcat(buff,";");
-						memset(&cj[0], 0, sizeof(cj));
-
-						//	hum_BM
-						os_sprintf(cj,"%u.%02u",bme280_humidity >> 10, ((bme280_humidity & 0x000003FF) * 100) >> 10);
-						os_strcat(buff, cj);
-						os_strcat(buff,";");
-						memset(&cj[0], 0, sizeof(cj));
-
-						//	press_BM
-						os_sprintf(cj,"%u.%02u",(bme280_pressure >> 8) / 100, (bme280_pressure >> 8) % 100);
-						os_strcat(buff, cj);
-						os_strcat(buff,";");
-						memset(&cj[0], 0, sizeof(cj));
-
-						//	checker_1_state
-						if (temporary_light_off_timer == 0 )
-						{
-							os_strcpy(cj, "0");
-						}
-						else
-						{
-							os_strcpy(cj,"1");
-						}
+//						os_sprintf(cj, "%02x.%02x.20%02x",   DS3231_Date[0], DS3231_Date[1], DS3231_Date[2]);
 						os_strcat(buff, cj);
 						os_strcat(buff,";");
 						memset(&cj[0], 0, sizeof(cj));
 
 
-						//	checker_1_time
-						if (temporary_light_off_timer == 0 )
-						{
-							os_sprintf(cj,"%d", atoi (mFlag.tempOff_time));
-				//			os_strcpy(buff, "");
-						}
-						else
-						{
-							os_sprintf(cj,"%d хв. %d сек.", temporary_light_off_timer/60, temporary_light_off_timer%60);
-				//			os_strcpy(buff,"checked");
-						}
-						os_strcat(buff, cj);
-						os_strcat(buff,";");
-						memset(&cj[0], 0, sizeof(cj));
+
 
 
 
@@ -452,10 +340,6 @@ int ICACHE_FLASH_ATTR cgi_index_get_data(HttpdConnData *connData)
 						os_strcat(buff,";");
 						memset(&cj[0], 0, sizeof(cj));
 
-						//illuminance
-						os_sprintf(cj,"%d", i2c_BH1750FVI_Illuminance);
-						os_strcat(buff,cj);
-						memset(&cj[0], 0, sizeof(cj));
 
 
 
@@ -546,27 +430,6 @@ int ICACHE_FLASH_ATTR cgi_index(HttpdConnData *connData)
 		//Connection aborted. Clean up.
 		return HTTPD_CGI_DONE;
 	}
-	len=httpdFindArg(connData->post->buff, "slider1", buff, sizeof(buff));
-	if (len!=0)
-	{
-		INFO("\r\n slider 1   ");
-		INFO(buff);
-//		INFO ("     atoi = %d", atoi(buff) == 0);
-		INFO("\r\n");
-
-		if (os_strcmp("false",buff)==0)
-		{
-			temporary_light_off_timer=0;
-		}
-		if (os_strcmp("true",buff)==0)
-		{
-			temporary_light_off_timer=atoi (mFlag.tempOff_time)*60;;
-			temporary_light_on_timer=0;
-		}
-//		mFlag.minLight = atoi (buff);
-//		AddCFG_Save();
-	}
-	memset(&buff[0], 0, sizeof(buff));
 
 
 	len=httpdFindArg(connData->post->buff, "slider2", buff, sizeof(buff));

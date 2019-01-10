@@ -50,7 +50,7 @@ int ICACHE_FLASH_ATTR tpl_temperature_selector(HttpdConnData *connData, char *to
 
 	if (os_strcmp(token, "t_opt")==0)
 	{
-		os_sprintf(buff,"%d",ds18b20_amount_of_devices);
+
 	}
 	memset(&cj[0], 0, sizeof(cj));
 
@@ -90,51 +90,6 @@ int ICACHE_FLASH_ATTR cgi_temperature_selector_1(HttpdConnData *connData) {
 
 
 INFO("\r\n\r\n");
-	len=httpdFindArg(connData->post->buff, "data", buff, sizeof(buff));
-	if (len!=0)
-	{
-		INFO(buff);
-		INFO("\r\n\r\n");
-
-
-
-
-
-		char * pch;
-		pch = strtok (buff,",");
-		temperature_options_current = atoi (pch);
-		INFO(pch);
-		INFO("\r\n\r\n");
-		pch = strtok (NULL, ",");
-		mFlag.Temperature_selector_array[temperature_options_current].temparture_sensor = atoi (pch);
-		INFO(pch);
-		INFO("\r\n\r\n");
-		pch = strtok (NULL, ",");
-		mFlag.Temperature_selector_array[temperature_options_current].control_channel = atoi (pch);
-		INFO(pch);
-		INFO("\r\n\r\n");
-		pch = strtok (NULL, ",");
-		mFlag.Temperature_selector_array[temperature_options_current].on_temperature = atoi (pch);
-		INFO(pch);
-		INFO("\r\n\r\n");
-		pch = strtok (NULL, ",");
-		mFlag.Temperature_selector_array[temperature_options_current].off_temperature = atoi (pch);
-		INFO(pch);
-		INFO("\r\n\r\n");
-		pch = strtok (NULL, ",");
-		mFlag.Temperature_selector_array[temperature_options_current].lower_dimmer_value = atoi (pch);
-		INFO(pch);
-		INFO("\r\n\r\n");
-		pch = strtok (NULL, ",");
-		mFlag.Temperature_selector_array[temperature_options_current].upper_dimmer_value = atoi (pch);
-		INFO(pch);
-		INFO("\r\n\r\n");
-		AddCFG_Save();
-
-//		i2c_PCF8574_Write(0x4c,currLedState,1);
-
-//		ioLed(currLedState);
-	}
 
 //	httpdRedirect(connData, "/temperature_selector/temperature_selector.tpl");
 	return HTTPD_CGI_DONE;
@@ -167,17 +122,6 @@ int ICACHE_FLASH_ATTR var_temperature_selector(HttpdConnData *connData, char *to
 	INFO("ch:%d",temperature_options_current);
 	INFO("\r\n\r\n");
 
-	if (os_strcmp(token, "txt")==0)
-	{//	fill temperature selector element
-		os_sprintf(buff,"%d,%d,%d,%d,%d,%d",\
-			mFlag.Temperature_selector_array[temperature_options_current].temparture_sensor,\
-			mFlag.Temperature_selector_array[temperature_options_current].control_channel,\
-			mFlag.Temperature_selector_array[temperature_options_current].on_temperature,\
-			mFlag.Temperature_selector_array[temperature_options_current].off_temperature,\
-			mFlag.Temperature_selector_array[temperature_options_current].lower_dimmer_value,\
-			mFlag.Temperature_selector_array[temperature_options_current].upper_dimmer_value);
-	}
-	memset(&cj[0], 0, sizeof(cj));
 
 
 
