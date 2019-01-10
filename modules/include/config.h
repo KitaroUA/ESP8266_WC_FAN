@@ -74,7 +74,7 @@ typedef struct {
 
 
 typedef struct {
-    uint8 flag;
+//    uint8 flag;
 	uint8 tempOn_time[3];
 	int8  timezone;
 	uint8 hostname[30];

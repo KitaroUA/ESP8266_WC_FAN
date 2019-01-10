@@ -3,7 +3,7 @@
 <html>
 <head>
 
-<title>IoT Template</title>
+<title>IoT WC FAN</title>
 
 
 
@@ -34,51 +34,31 @@ $.get("index_get_data.cgi" , {sensor_data:"get_data"}, function( data ) {
 		myVars={
         'cur_time':				line[0],
         'date':					line[1],
-        'working_hr':			line[2],
-        'temper_DS_1':			line[3],
-        'temper_DS_2':			line[4],
-        'temper_BM':			line[5],
-        'hum_BM':				line[6],
-        'pres_BM':				line[7],
-        'checker_1_state':		line[8],
-        'checker_1_time':		line[9],
-        'checker_2_state':		line[10],
-        'checker_2_time':		line[11],
-        'uptime':				line[12],
-        'try':					line[13],
-        'indicator_color':		line[14],
-        'illuminance':			line[15]
+        'temper_DHT':			line[2],
+        'hum_DHT':				line[3],
+        'checker_1_state':		line[4],
+        'checker_1_time':		line[5],
+        'uptime':				line[6],
+        'try':					line[7],
+        'indicator_color':		line[8],
         }
  
 
 		$("#current_time").html("Поточний час: "+myVars.cur_time+"<br>"+myVars.date);
-		$("#working_time").html("Режим роботи: "+myVars.working_hr);
-		$("#temperature").html("Температура в акваріумі: "+myVars.temper_DS_1+"<br>Температура зовні: "+myVars.temper_DS_2+"<br>Освітленість: "+myVars.illuminance+"лк");
-		$("#BME").html("Температура BME: "+myVars.temper_BM+"°С, вологість: "+myVars.hum_BM+"&#37 тиск: "+myVars.pres_BM+"гPa ("+Math.round(myVars.pres_BM*3/4)+"мм. рт. ст.)");
+		$("#BME").html("Температура: "+myVars.temper_DHT+"°С, вологість: "+myVars.hum_DHT+"&#37");
 		$("#myCanvas").attr("data-color" , myVars.indicator_color);
 		draw_color_circle();
 		if (myVars.checker_1_state === "1")
 			{
 			$( "#slider1" ).prop( "checked", true );
-			$("#checker_1_text").html("Світло тимчасово вимкнено ще: "+myVars.checker_1_time);
+			$("#checker_1_text").html("Вентилятор тимчасово увімкнено ще на: "+myVars.checker_1_time +" хв.");
 			}
 			else
 			{
 			$( "#slider1" ).prop( "checked", false );
-			$("#checker_1_text").html("Тимчасово вимкнути світло на: "+myVars.checker_1_time+" хв.");
-			}
-		if (myVars.checker_2_state === "1")
-			{
-			$( "#slider2" ).prop( "checked", true );
-			$("#checker_2_text").html("Світло тимчасово увімкнено ще: "+myVars.checker_2_time);
-			}
-			else
-			{
-			$( "#slider2" ).prop( "checked", false );
-			$("#checker_2_text").html("Тимчасово увімкнути світло на: "+myVars.checker_2_time+" хв.");
+			$("#checker_1_text").html("Тимчасово увімкнути вентилятор на: "+myVars.checker_1_time+" хв.");
 			}
 		$("#onoffswitch1").load(window.location.href + "#onoffswitch1");	
-		$("#onoffswitch2").load(window.location.href + "#onoffswitch2");	
 
 		$("#up_time").html("Працюємо вже: "+myVars.uptime+"<br>Спроба №"+myVars.try);
 
@@ -149,12 +129,25 @@ get_data();
 	
 <h1><canvas id="myCanvas" width="23" height="23" onload="draw_color_circle()"></canvas>
 
-ESP_IoT_Template<br> 
+ESP_IoT_WC_FAN_0201<br> 
 </h1>
 	
 </td>
 </tr>
+<tr>
+<img src="fan-animated.gif" >
+<img src="fan-static.gif" >
 
+
+
+</tr>
+<tr>
+<img src="bulb-off.png" >
+<img src="bulb-on.png" >
+
+
+
+</tr>
 <tr>
 <td align="center" colspan="2"><div id="current_time"></div></td>
 </tr>
@@ -185,19 +178,6 @@ ESP_IoT_Template<br>
 <td align="left"><font size="5" class="switch_text"><div id="checker_1_text"></div></font></td>
 </tr>
 
-<tr>
-<td align="right">
-<div class="onoffswitch2">
-<input type="checkbox" class="onoffswitch2-checkbox" id="slider2" name="slider2" onchange="post_slider()" > 
-	<label class="onoffswitch2-label" for="slider2"> 
-        <span class="onoffswitch2-inner"></span>
-        <span class="onoffswitch2-switch"></span>
-</label>
-</div>
-</td>
-
-<td align="left"><font size="5" class="switch_text"><div id="checker_2_text"></div></font></td>
-</tr>
 <tr><td align="center" colspan="2" class="main"><div id="up_time"></div></td></tr>
 
 <tr>
@@ -208,14 +188,6 @@ ESP_IoT_Template<br>
 
 <form method="post" action="index.cgi" id="unchecked1" name="unchecked1">
 <input type="hidden" id="slider1" name="slider1" value="0">
-</form>
-
-<form method="post" action="index.cgi" id="checked2" name="checked2">
-<input type="hidden" id="slider2" name="slider2" value="1">
-</form>
-
-<form method="post" action="index.cgi" id="unchecked2" name="unchecked2">
-<input type="hidden" id="slider2" name="slider2" value="0">
 </form>
 </td>
 </tr>

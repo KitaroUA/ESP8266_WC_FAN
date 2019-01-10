@@ -14,7 +14,7 @@
 #include "driver/uart.h"
 #include "driver/i2c.h"
 #include "driver/my_i2c.h"
-//#include "driver/IIC_DS3231.h"
+#include "driver/IIC_DS1307.h"
 uint8 global_light_status;
 
 
@@ -220,7 +220,7 @@ MQTT_Client mqttClient;
 uint32 	uptime;
 
 #include "driver/dht22.h"
-#include "driver/ds1307.h"
+//#include "driver/ds1307.h"
 
 
 #include "driver/gpio16.h"

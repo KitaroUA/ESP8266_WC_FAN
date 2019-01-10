@@ -42,8 +42,9 @@ USE_OPENSDK?=no
 ESPTOOL ?= $(SDK_TOOLS)/esptool.exe
 ESPPORT ?= COM3
 #ESPDELAY indicates seconds to wait between flashing the two binary images
-ESPDELAY	?= 3
+ESPDELAY	?= 30
 ESPBAUD		?= 460800
+#ESPBAUD		?= 9600
 
 #Appgen path and name
 APPGEN		?= $(SDK_TOOLS)/gen_appbin.exe

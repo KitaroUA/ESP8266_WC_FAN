@@ -8,7 +8,7 @@
 
 
 #include "driver\ntp.h"
-#include "driver\IIC_DS3231.h"
+#include "driver\IIC_DS1307.h"
 
 // list of major public servers http://tf.nist.gov/tf-cgi/servers.cgi
 //uint8 ntp_server[] = {131, 107, 13, 100}; // microsoft
@@ -216,19 +216,17 @@ static void ICACHE_FLASH_ATTR ntp_udp_recv(void *arg, char *pdata, unsigned shor
 
 
 
-/*
 
-	DS3231_Date_to_Write[0] = decToBcd(dt->tm_sec);
-	DS3231_Date_to_Write[1] = decToBcd(dt->tm_min);
-	DS3231_Date_to_Write[2] = decToBcd(dt->tm_hour);
-	DS3231_Date_to_Write[3] = decToBcd(dt->tm_wday);
-	DS3231_Date_to_Write[4] = decToBcd(dt->tm_mday);
-	DS3231_Date_to_Write[5] = decToBcd(dt->tm_mon + 1);
-	DS3231_Date_to_Write[6] = decToBcd(dt->tm_year - 100);
-	DS3231_Set_Date();
-*/
-	time2write = dt;
-	ds1307_setTime();
+
+	DS1307_Date_to_Write[0] = decToBcd(dt->tm_sec);
+	DS1307_Date_to_Write[1] = decToBcd(dt->tm_min);
+	DS1307_Date_to_Write[2] = decToBcd(dt->tm_hour);
+	DS1307_Date_to_Write[3] = decToBcd(dt->tm_wday);
+	DS1307_Date_to_Write[4] = decToBcd(dt->tm_mday);
+	DS1307_Date_to_Write[5] = decToBcd(dt->tm_mon + 1);
+	DS1307_Date_to_Write[6] = decToBcd(dt->tm_year - 100);
+	DS1307_Set_Date();
+
 	// clean up connection
 	if (pCon) {
 		espconn_delete(pCon);

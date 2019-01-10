@@ -29,12 +29,9 @@ void ICACHE_FLASH_ATTR init_circular_timer_proc(void)
 void ICACHE_FLASH_ATTR circular_timer_proc(void)
 {
 
-	//		uint8 sec = bcdToDec(DS3231_Time[0]);
-	//		uint8 min = bcdToDec(DS3231_Time[1]);
-	//		uint8 hr  = bcdToDec(DS3231_Time[2]);
-			uint8 sec = bcdToDec(0);
-			uint8 min = bcdToDec(0);
-			uint8 hr  = bcdToDec(0);
+			uint8 sec = bcdToDec(DS1307_Time[0]);
+			uint8 min = bcdToDec(DS1307_Time[1]);
+			uint8 hr  = bcdToDec(DS1307_Time[2]);
 
 		every_second_task();
 
@@ -97,9 +94,9 @@ void ICACHE_FLASH_ATTR circular_timer_proc(void)
 
 
 		// Перевірка кожну годину
-	//	if ( (DS3231_Time[1] == 0) & (DS3231_Time[0] == 0))
+		if ( (DS1307_Time[1] == 0) & (DS1307_Time[0] == 0))
 	//	if ( (DS3231_Time[1] != 0) & (DS3231_Time[0] != 0))
-		if ( (1 == 0) & (0 == 0))
+//		if ( (1 == 0) & (0 == 0))
 		{
 			INFO ("\n ------------------an hour------------------------- \r\n");
 
@@ -188,6 +185,15 @@ void ICACHE_FLASH_ATTR circular_timer_proc(void)
 		}
 
 
+		// Перевірка кожну хвилину
+		if ((DS1307_Time[0] == 0))
+		{
+
+
+
+		}
+
+
 	//	one_sec_timer_xor1 ^= 0xff;
 		one_sec_timer_xor1 ^= 0b00000010;
 		uptime++;
@@ -204,8 +210,7 @@ void ICACHE_FLASH_ATTR every_second_task()
 
 
 
-
-
+//	DS1307_Read();
 
 
 
@@ -230,7 +235,26 @@ void ICACHE_FLASH_ATTR every_second_task()
 void ICACHE_FLASH_ATTR every_5_second_task ()
 {
 
+	static uint8_t i;
+	DHT_Sensor_Data data;
+	uint8_t pin;
 
+	// One DHT22 sensor
+	pin = sensor.pin;
+	if (DHTRead(&sensor, &data))
+	{
+	    char buff[20];
+		DHT_temperature = data.temperature;
+		DHT_Humidity = data.humidity;
+//	    INFO("GPIO%d\r\n", pin);
+//	    INFO("Temperature: %s *C\r\n", DHTFloat2String(buff, data.temperature));
+//	    INFO("Humidity: %s %%\r\n", DHTFloat2String(buff, data.humidity));
+//	    INFO("Temperature: %s *C\r\n", DHTFloat2String(buff, DHT_temperature));
+//	    INFO("Humidity: %s %%\r\n", DHTFloat2String(buff, DHT_Humidity));
+
+	} else {
+	    INFO("Failed to read temperature and humidity sensor on GPIO%d\n", pin);
+	}
 
 
 

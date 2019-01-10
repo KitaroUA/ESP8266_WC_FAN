@@ -444,20 +444,17 @@ void ICACHE_FLASH_ATTR user_rf_pre_init(void)
 
 
 
-#define DELAY 2000 /* milliseconds */
-
-LOCAL os_timer_t dht22_timer;
-
-DHT_Sensor sensor;
 
 
 
-LOCAL void ICACHE_FLASH_ATTR dht22_cb(void *arg)
+
+
+LOCAL void ICACHE_FLASH_ATTR dht22_cb(void)
 {
 	static uint8_t i;
 	DHT_Sensor_Data data;
 	uint8_t pin;
-	os_timer_disarm(&dht22_timer);
+//	os_timer_disarm(&dht22_timer);
 
 	// One DHT22 sensor
 	pin = sensor.pin;
@@ -471,7 +468,7 @@ LOCAL void ICACHE_FLASH_ATTR dht22_cb(void *arg)
 	    INFO("Failed to read temperature and humidity sensor on GPIO%d\n", pin);
 	}
 
-	os_timer_arm(&dht22_timer, DELAY, 1);
+//	os_timer_arm(&dht22_timer, DELAY, 1);
 }
 
 
@@ -643,6 +640,11 @@ if(work_mode == 0)
 	i2c_init();
 
 //	DS3231_Init();
+	DS1307_Init();
+	char ct[21];
+//	os_sprintf(ci, "%02x:%02x:%02x %02x.%02x.20%02x",  DS3231_Time[2], DS3231_Time[1], DS3231_Time[0], DS3231_Date[0], DS3231_Date[1], DS3231_Date[2]);
+	os_sprintf(ct, "%02x:%02x:%02x",  DS1307_Time[2], DS1307_Time[1], DS1307_Time[0]);
+	INFO("%s",ct);
 	SetTimerTask (circular_timer, init_circular_timer_proc, 5000, 0);
 
 
@@ -650,12 +652,15 @@ if(work_mode == 0)
 
 	// One DHT22 sensor
 		// Pin number 4 = GPIO2
-		sensor.pin = D3pin;
+		sensor.pin =  3; //D3
 		sensor.type = DHT22;
 		INFO("DHT22 init on GPIO%d\r\n", sensor.pin);
 		DHTInit(&sensor);
-
-
+/*
+		os_timer_disarm(&dht22_timer);
+		os_timer_setfn(&dht22_timer, (os_timer_func_t *)dht22_cb, (void *)0);
+		os_timer_arm(&dht22_timer, DELAY, 1);
+*/
 
 
 }

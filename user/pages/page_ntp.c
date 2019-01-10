@@ -388,19 +388,15 @@ int ICACHE_FLASH_ATTR cgi_PC_Time(HttpdConnData *connData)
 		{
 			dt->tm_wday = 0; //� NTP ���� ����� �� 0 �� 6 ��������� � �����, ��������� � ����� �� 1 �� 7
 		}
-		time2write = dt;
-		ds1307_setTime();
-/*
-		DS3231_Date_to_Write[0] = decToBcd(dt->tm_sec);
-		DS3231_Date_to_Write[1] = decToBcd(dt->tm_min);
-		DS3231_Date_to_Write[2] = decToBcd(dt->tm_hour);
-		DS3231_Date_to_Write[3] = decToBcd(dt->tm_wday);
-		DS3231_Date_to_Write[4] = decToBcd(dt->tm_mday);
-		DS3231_Date_to_Write[5] = decToBcd(dt->tm_mon + 1);
-		DS3231_Date_to_Write[6] = decToBcd(dt->tm_year - 100);
-		DS3231_Set_Date();
-*/
 
+		DS1307_Date_to_Write[0] = decToBcd(dt->tm_sec);
+		DS1307_Date_to_Write[1] = decToBcd(dt->tm_min);
+		DS1307_Date_to_Write[2] = decToBcd(dt->tm_hour);
+		DS1307_Date_to_Write[3] = decToBcd(dt->tm_wday);
+		DS1307_Date_to_Write[4] = decToBcd(dt->tm_mday);
+		DS1307_Date_to_Write[5] = decToBcd(dt->tm_mon + 1);
+		DS1307_Date_to_Write[6] = decToBcd(dt->tm_year - 100);
+		DS1307_Set_Date();
 	}
 
 

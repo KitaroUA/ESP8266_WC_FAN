@@ -26,13 +26,13 @@ int ICACHE_FLASH_ATTR tpl_index(HttpdConnData *connData, char *token, void **arg
 
 /*	if (os_strcmp(token, "curTime")==0)
 	{
-		if (DS3231_Date[0] == 0)
+		if (DS1307_Date[0] == 0)
 		{	//���� ������� ���� ������� - ������ �� ��������
 			os_strcpy(buff, "");
 		}
 		else
 		{
-			os_sprintf(cj, "%02x:%02x:%02x %02x.%02x.20%02x",  DS3231_Time[2], DS3231_Time[1], DS3231_Time[0], DS3231_Date[0], DS3231_Date[1], DS3231_Date[2]);
+			os_sprintf(cj, "%02x:%02x:%02x %02x.%02x.20%02x",  DS1307_Time[2], DS1307_Time[1], DS1307_Time[0], DS1307_Date[0], DS1307_Date[1], DS1307_Date[2]);
 			os_strcpy(buff, cj);
 		}
 	}
@@ -226,7 +226,7 @@ int ICACHE_FLASH_ATTR cgi_index_get_data(HttpdConnData *connData)
 
 					if(os_strcmp("current_time",buff)==0)
 					{
-//					os_sprintf(cj, "%02x:%02x:%02x<br>%02x.%02x.20%02x",  DS3231_Time[2], DS3231_Time[1], DS3231_Time[0], DS3231_Date[0], DS3231_Date[1], DS3231_Date[2]);
+					os_sprintf(cj, "%02x:%02x:%02x<br>%02x.%02x.20%02x",  DS1307_Time[2], DS1307_Time[1], DS1307_Time[0], DS1307_Date[0], DS1307_Date[1], DS1307_Date[2]);
 					os_strcpy(buff, cj);
 					}
 					memset(&cj[0], 0, sizeof(cj));
@@ -261,18 +261,30 @@ int ICACHE_FLASH_ATTR cgi_index_get_data(HttpdConnData *connData)
 					if (os_strcmp("get_data",buff)==0)
 					{
 						//	time
-//						os_sprintf(cj, "%02x:%02x:%02x",  DS3231_Time[2], DS3231_Time[1], DS3231_Time[0]);
+						os_sprintf(cj, "%02x:%02x:%02x",  DS1307_Time[2], DS1307_Time[1], DS1307_Time[0]);
 						os_strcpy(buff,cj);
 						os_strcat(buff,";");
+
 						memset(&cj[0], 0, sizeof(cj));
 
 						//	date
-//						os_sprintf(cj, "%02x.%02x.20%02x",   DS3231_Date[0], DS3231_Date[1], DS3231_Date[2]);
+						os_sprintf(cj, "%02x.%02x.20%02x",   DS1307_Date[0], DS1307_Date[1], DS1307_Date[2]);
 						os_strcat(buff, cj);
 						os_strcat(buff,";");
 						memset(&cj[0], 0, sizeof(cj));
 
-
+						//	temper_DHT   "%d.%d",
+						os_sprintf(cj,"%s",DHTFloat2String(cj, DHT_temperature));
+//						os_sprintf(cj,"%d.%d", (int)(DHT_temperature),(int)((DHT_temperature - (int)DHT_temperature)*100));
+						os_strcat(buff, cj);
+						os_strcat(buff,";");
+						memset(&cj[0], 0, sizeof(cj));
+						//	hum_DHT
+						os_sprintf(cj,"%s",DHTFloat2String(cj, DHT_Humidity));
+//						os_sprintf(cj,"%d.%d", (int)(DHT_Humidity),(int)((DHT_Humidity - (int)DHT_Humidity)*100));
+						os_strcat(buff, cj);
+						os_strcat(buff,";");
+						memset(&cj[0], 0, sizeof(cj));
 
 
 
@@ -346,7 +358,6 @@ int ICACHE_FLASH_ATTR cgi_index_get_data(HttpdConnData *connData)
 
 					}
 					memset(&cj[0], 0, sizeof(cj));
-
 
 
 

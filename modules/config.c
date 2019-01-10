@@ -197,7 +197,7 @@ void ICACHE_FLASH_ATTR Default_CFG(void)
 
 
 	os_sprintf(mFlag.tempOn_time, "%s", "45");
-	os_sprintf(mFlag.hostname, "ESP_IoT_04001");
+	os_sprintf(mFlag.hostname, "ESP_IoT_02001");
 	os_sprintf(mFlag.ntp, "0.ua.pool.ntp.org");
 	mFlag.timezone = 2;
 	mFlag.ntp_flag=1;

@@ -153,7 +153,7 @@ for (i = 0; i < i2c_packet_lenght; i++)
 			i2c_writeByte(i2c_Buffer[i2c_pointer]);
 			if (!i2c_check_ack())
 			{
-				//os_printf("-%s-%s slave not ack... return \r\n", __FILE__, __func__);
+//				os_printf("-%s-%s slave not ack... return \r\n", __FILE__, __func__);
 				i2c_stop();
 			    MACRO_i2c_WhatDo_ErrorOut // ������������ ������� ������;
 
@@ -213,13 +213,13 @@ uint8  ICACHE_FLASH_ATTR i2c_Read_Addr_Buffer(uint8 SAddr, uint8 Addr, uint8 Byt
 	i2c_start();
 	i2c_writeByte(SAddr);
 	if (!i2c_check_ack()) {
-//	  os_printf("-%s-%s slave not ack... return \r\n", __FILE__, __func__);
+	  os_printf("-%s-%s slave not ack... return \r\n", __FILE__, __func__);
 	  i2c_stop();
 	  return(0);
 	}
 	i2c_writeByte(Addr);
 	if (!i2c_check_ack()) {
-//	  os_printf("-%s-%s slave not ack... return \r\n", __FILE__, __func__);
+	  os_printf("-%s-%s slave not ack... return \r\n", __FILE__, __func__);
 	  i2c_stop();
 	  return(0);
 	}
@@ -227,7 +227,7 @@ uint8  ICACHE_FLASH_ATTR i2c_Read_Addr_Buffer(uint8 SAddr, uint8 Addr, uint8 Byt
 	i2c_start();
 	i2c_writeByte(SAddr+1);
 	if (!i2c_check_ack()) {
-//	  os_printf("-%s-%s slave not ack... return \r\n", __FILE__, __func__);
+	  os_printf("-%s-%s slave not ack... return \r\n", __FILE__, __func__);
 	  i2c_stop();
 	  return(0);
 	}
