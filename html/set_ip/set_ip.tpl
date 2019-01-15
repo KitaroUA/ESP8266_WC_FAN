@@ -148,7 +148,7 @@ $.post( "set_ip_1.cgi", {'sta_ip_addr':$('input[name=sta_ip_addr_i]').val(),
 				<table width="800px">
 					<tr>
 						<th align="left">
-							<button name="set_ip" class="options_btn" onclick="myFn_ip()">Оновити ip адреси</button>
+							<button name="set_ip" class="options_btn" onclick="myFn_ip()">Записати данні в пам'ять</button>
 						</th>
 						<th align="right">
 						<form method="post" action="set_ip_2.cgi">

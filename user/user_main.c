@@ -31,6 +31,7 @@ some pictures of cats.
 #include "webpages-espfs.h"
 #include "cgiwebsocket.h"
 
+//==========================================  Debug INFO ================================
 
 
 
@@ -44,7 +45,7 @@ some pictures of cats.
 #define ESP_GPIO_PIN_NUM 17
 
 uint8_t pin2esp_pin[GPIO_PIN_NUM];
-uint8_t pin2esp_pin[GPIO_PIN_NUM] = {16,  5,  4,  0,
+uint8_t pin2esp_pin[GPIO_PIN_NUM] = {16,  5,  4,  0,		// D1 mini pins (d0-d8) to GPIO numbers
 								     2, 14, 12, 13,
 								    15,  3,  1,  9,
 								    10};
@@ -195,21 +196,6 @@ HttpdBuiltInUrl builtInUrls[]={
 	{"/set_ntp/apply_ntp.cgi", cgi_apply_ntp, NULL},
 	{"/set_ntp/PC_Time.cgi", cgi_PC_Time, NULL},
 
-
-
-
-/*
- * set_temp_on page
- */
-	//	{"/set_temp_off", cgiRedirect, "/set_temp_off/set_temp_off.tpl"},
-	//	{"/set_temp_off/", cgiRedirect, "/set_temp_off/set_temp_off.tpl"},
-		{"/set_temp_on/set_temp_on.tpl", cgiEspFsTemplate, tpl_set_temp_on},
-		{"/set_temp_on/set_temp_on.cgi", cgi_set_temp_on, NULL},
-
-
-
-
-
 /*
  * set_mqtt page
  */
@@ -291,13 +277,15 @@ void ICACHE_FLASH_ATTR mqttConnectedCb(uint32_t *args)
 {
 	MQTT_Client* client = (MQTT_Client*)args;
 	INFO("MQTT: Connected\r\n");
-	MQTT_Subscribe(client, "/esp1/LED", 0);
-	MQTT_Subscribe(client, "/esp1/NTP", 1);
+	MQTT_Subscribe(client, "/IoT_02001/Fan", 0);
+	MQTT_Subscribe(client, "/IoT_02001/Setup", 0);
 
-	MQTT_Publish(client, "/esp1/Temp", "0", 1, 0, 0);
-	MQTT_Publish(client, "/esp1/Hum",  "0", 1, 1, 0);
-	MQTT_Publish(client, "/esp1/LED",  "0", 1, 1, 0);
-	MQTT_Publish(client, "/esp1/NTP",  "0", 1, 1, 0);
+	MQTT_Publish(client, "/IoT_02001/Temp", "0", 1, 0, 0);
+	MQTT_Publish(client, "/IoT_02001/Hum",  "0", 1, 1, 0);
+	MQTT_Publish(client, "/IoT_02001/Mov",  "0", 1, 1, 0);
+	MQTT_Publish(client, "/IoT_02001/Fan",  "0", 1, 1, 0);
+	MQTT_Publish(client, "/IoT_02001/Setup",  "0", 1, 1, 0);
+
 
 }
 
@@ -453,23 +441,39 @@ LOCAL void ICACHE_FLASH_ATTR dht22_cb(void)
 {
 	static uint8_t i;
 	DHT_Sensor_Data data;
-	uint8_t pin;
+//	uint8_t pin;
 //	os_timer_disarm(&dht22_timer);
 
 	// One DHT22 sensor
-	pin = sensor.pin;
+//	pin = sensor.pin;
 	if (DHTRead(&sensor, &data))
 	{
 	    char buff[20];
-	    INFO("GPIO%d\r\n", pin);
+//	    INFO("GPIO%d\r\n", pin);
 	    INFO("Temperature: %s *C\r\n", DHTFloat2String(buff, data.temperature));
 	    INFO("Humidity: %s %%\r\n", DHTFloat2String(buff, data.humidity));
 	} else {
-	    INFO("Failed to read temperature and humidity sensor on GPIO%d\n", pin);
+//	    INFO("Failed to read temperature and humidity sensor on GPIO%d\n", pin);
 	}
 
 //	os_timer_arm(&dht22_timer, DELAY, 1);
 }
+
+
+
+
+void ICACHE_FLASH_ATTR intr_callback(unsigned pin, unsigned level)
+{
+	INFO("INTERRUPT: GPIO%d = %d\r\n", pin2esp_pin[pin], level);
+
+	if(pin == esp_pin2pin[PIR_PIN]) // Button
+	{
+		return;
+	}
+
+
+}
+
 
 
 
@@ -479,8 +483,8 @@ LOCAL void ICACHE_FLASH_ATTR dht22_cb(void)
 void ICACHE_FLASH_ATTR user_init(void)
 {
 
-	temporary_light_off_timer = 0;
-	temporary_light_on_timer = 0;
+	temporary_fan_on_timer = 0;
+	temporary_fan_off_timer = 0;
 	uptime=0;
 
 
@@ -495,9 +499,9 @@ void ICACHE_FLASH_ATTR user_init(void)
 
 
 
-	AddCFG_Load();
-	mFlag.try++;
-	AddCFG_Save();
+	SysCFG_Load();
+	sysCfg.try++;
+	SysCFG_Save();
 
 
 
@@ -512,7 +516,6 @@ uint8_t work_mode = 0;
 
 	if (GPIO_INPUT_GET(WIFI_Button_Pin))
 	{
-		SysCFG_Load(0);
 
 		INFO("\r\nNormal mode\r\n");
 		WIFI_Connect(sysCfg.sta_ssid, sysCfg.sta_pwd, wifiConnectCb);
@@ -524,11 +527,11 @@ uint8_t work_mode = 0;
 		INFO("\r\nSetup mode\r\n");
 
 
-		mFlag.try++;
+		sysCfg.try++;
 
-//		INFO ("\r\n Try Setup = %d \r\n", mFlag.try);
+//		INFO ("\r\n Try Setup = %d \r\n", sysCfg.try);
 
-		if(mFlag.try == 2)
+		if(sysCfg.try == 2)
 		/*
 		 * Init of flash variables
 		 * |||||||||||||||||||||||||
@@ -542,8 +545,8 @@ uint8_t work_mode = 0;
 		 * |||||||||||||||||||||||||
 		 * Init of flash variables
 		 */
-		mFlag.try=0;
-		AddCFG_Save();
+		sysCfg.try=0;
+		SysCFG_Save();
 
 
 		struct ip_info ipinfo;
@@ -601,9 +604,9 @@ captdnsInit();
 
 
 	// Apply some Time zone vars
-	_daylight = mFlag.dst_flag;                 // Non-zero if daylight savings time is used
+	_daylight = sysCfg.dst_flag;                 // Non-zero if daylight savings time is used
 	_dstbias = 3600;                  			// Offset for Daylight Saving Time
-	_timezone = 0 - (mFlag.timezone*3600);      // Difference in seconds between GMT and local time
+	_timezone = 0 - (sysCfg.timezone*3600);      // Difference in seconds between GMT and local time
 
 
 
@@ -621,6 +624,7 @@ captdnsInit();
 if(work_mode == 0)
 {
 
+	//	MQTT_InitConnection(&mqttClient, sysCfg.mqtt_host, sysCfg.mqtt_port, sysCfg.security);
 	MQTT_InitConnection(&mqttClient, sysCfg.mqtt_host, sysCfg.mqtt_port, sysCfg.security);
 	//MQTT_InitConnection(&mqttClient, "192.168.11.122", 1880, 0);
 
@@ -648,20 +652,48 @@ if(work_mode == 0)
 	SetTimerTask (circular_timer, init_circular_timer_proc, 5000, 0);
 
 
-	PIN_FUNC_SELECT(RELAY_MUX, RELAY_FUNC);
+		PIN_FUNC_SELECT(RELAY_MUX, RELAY_FUNC);
 
 	// One DHT22 sensor
-		// Pin number 4 = GPIO2
-		sensor.pin =  3; //D3
+		sensor.pin =  esp_pin2pin[DHT_PIN];
 		sensor.type = DHT22;
 		INFO("DHT22 init on GPIO%d\r\n", sensor.pin);
 		DHTInit(&sensor);
-/*
-		os_timer_disarm(&dht22_timer);
-		os_timer_setfn(&dht22_timer, (os_timer_func_t *)dht22_cb, (void *)0);
-		os_timer_arm(&dht22_timer, DELAY, 1);
-*/
 
+
+
+		//	======================================
+		//	External interrupts
+			GPIO_INT_TYPE gpio_type;
+			uint8_t gpio_pin;
+
+
+			INFO ("\r\n External Int.\r\n");
+
+			gpio_pin=esp_pin2pin[PIR_PIN];
+			gpio_type = GPIO_PIN_INTR_POSEDGE;
+			if (set_gpio_mode(gpio_pin,  GPIO_INT, GPIO_PULLUP)) {
+		#ifdef int_debug
+				INFO("GPIO%d set interrupt mode\r\n", pin_num[gpio_pin]);
+		#endif
+				if (gpio_intr_init(gpio_pin, gpio_type)) {
+		#ifdef int_debug
+					INFO("GPIO%d enable %s mode\r\n", pin_num[gpio_pin], gpio_type_desc[gpio_type]);
+		#endif
+					gpio_intr_attach(intr_callback);
+				} else {
+		#ifdef int_debug
+					INFO("Error: GPIO%d not enable %s mode\r\n", pin_num[gpio_pin], gpio_type_desc[gpio_type]);
+		#endif
+				}
+			} else {
+		#ifdef int_debug
+				INFO("Error: GPIO%d not set interrupt mode\r\n", pin_num[gpio_pin]);
+		#endif
+			}
+
+		//	External interrupts
+		//	======================================
 
 }
 else

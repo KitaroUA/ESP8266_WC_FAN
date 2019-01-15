@@ -66,7 +66,7 @@ CFLAGS		= -Os -ggdb -std=gnu99 -Werror -Wpointer-arith -Wundef -Wall -Wl,-EL -fn
 		-nostdlib  -mtext-section-literals  -D__ets__  \
 		-Wno-address -Wno-implicit-function-declaration -DICACHE_FLASH -mlongcalls \
 		-Wswitch -Wno-unused-function -Wno-parentheses -Wno-unused-variable -Wno-pointer-sign \
-		-Wno-uninitialized
+		-Wno-uninitialized 
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static

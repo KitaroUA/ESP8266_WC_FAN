@@ -100,7 +100,7 @@ int ICACHE_FLASH_ATTR tplshowTime(HttpdConnData *connData, char *token, void **a
 
 //	��� � ����� ��� �������� ��� ����� ������ ���� ���������
 	os_strcpy(cj, "on_t_");
-	os_strcat(cj, mFlag.on_time);
+	os_strcat(cj, sysCfg.on_time);
 	if (os_strncmp(token,cj,6)==0)
 	{
 		if (os_strcmp(token,cj)==0)
@@ -115,7 +115,7 @@ int ICACHE_FLASH_ATTR tplshowTime(HttpdConnData *connData, char *token, void **a
 	memset(&cj[0], 0, sizeof(cj));
 
 	os_strcpy(cj, "off_t_");
-	os_strcat(cj, mFlag.off_time);
+	os_strcat(cj, sysCfg.off_time);
 	if (os_strncmp(token,cj,6)==0)
 	{
 		if (os_strcmp(token,cj)==0)
@@ -206,12 +206,12 @@ int ICACHE_FLASH_ATTR cgi_btn_time(HttpdConnData *connData)
 	len=httpdFindArg(connData->post->buff, "on_time", buff, sizeof(buff));
 	if (len!=0)
 	{
-		os_strcpy(mFlag.on_time,buff);
+		os_strcpy(sysCfg.on_time,buff);
 	}
 	len=httpdFindArg(connData->post->buff, "off_time", buff, sizeof(buff));
 	if (len!=0)
 	{
-		os_strcpy(mFlag.off_time,buff);
+		os_strcpy(sysCfg.off_time,buff);
 	}
 
 

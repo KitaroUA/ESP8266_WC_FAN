@@ -15,6 +15,8 @@
 #include "user_config.h"
 #include "config.h"
 
+//#define WIFI_DEBUG
+
 static ETSTimer WiFiLinker;
 WifiCallback wifiCb = NULL;
 static uint8_t wifiStatus = STATION_IDLE, lastWifiStatus = STATION_IDLE;
@@ -84,11 +86,14 @@ void ICACHE_FLASH_ATTR WIFI_Connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 
 	os_memset(&stationConf, 0, sizeof(struct station_config));
 
-	INFO("WIFI config: \r\n");
 	os_sprintf(stationConf.ssid, "%s", ssid);
 	os_sprintf(stationConf.password, "%s", pass);
+
+#ifdef WIFI_DEBUG
+	INFO("WIFI config: \r\n");
 	INFO("\r\n%s", ssid);
 	INFO("\r\n%s\r\n", pass);
+#endif
 
 	wifi_station_set_config(&stationConf);
 
@@ -101,20 +106,14 @@ void ICACHE_FLASH_ATTR WIFI_Connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	wifi_softap_dhcps_stop();
 
 
-//	IP4_ADDR(&ipinfo.ip, 192, 168, 104, 200);
 	ipinfo.ip=sysCfg.staipinfo.ip;
-//	IP4_ADDR(&ipinfo.gw, 192, 168, 104, 1);
 	ipinfo.gw=sysCfg.staipinfo.gw;
-//	IP4_ADDR(&ipinfo.netmask, 255, 255, 255, 0);
 	ipinfo.netmask=sysCfg.staipinfo.netmask;
 	wifi_set_ip_info(STATION_IF, &ipinfo);
 
 
-//	IP4_ADDR(&ipinfo.ip, 192, 168, 4, 1);
 	ipinfo.ip=sysCfg.apipinfo.ip;
-//	IP4_ADDR(&ipinfo.gw, 192, 168, 4, 1);
 	ipinfo.gw=sysCfg.apipinfo.gw;
-//	IP4_ADDR(&ipinfo.netmask, 255, 255, 255, 0);
 	ipinfo.netmask=sysCfg.apipinfo.netmask;
 	wifi_set_ip_info(SOFTAP_IF, &ipinfo);
 

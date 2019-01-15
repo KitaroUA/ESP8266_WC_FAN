@@ -29,7 +29,7 @@
 
 #ifdef DHT_DEBUG
 #undef DHT_DEBUG
-#define DHT_DEBUG(...) os_printf(__VA_ARGS__);
+#define DHT_DEBUG INFO
 #else
 #define DHT_DEBUG(...)
 #endif

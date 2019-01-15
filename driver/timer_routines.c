@@ -11,6 +11,8 @@ uint8 one_sec_task_state = 0;
 
 void every_second_task();
 void every_5_second_task();
+void every_10_second_task();
+void every_minute_task();
 
 
 
@@ -38,35 +40,16 @@ void ICACHE_FLASH_ATTR circular_timer_proc(void)
 		if(sec%5 == 0)	//	Every 5 sec task
 		{
 			every_5_second_task();
+//			INFO("5sec %d\r\n", sec);
 		}
 
 
-			if ( (temporary_light_off_timer != 0))
-			{
-				temporary_light_off_timer = temporary_light_off_timer-1;
-	//			os_printf("                                        temp_off_timer = %d \r\n", temp_off_timer);
-			}
-			if ( (temporary_light_on_timer != 0))
-			{
-				temporary_light_on_timer = temporary_light_on_timer-1;
-	//			os_printf("                                        temp_off_timer = %d \r\n", temp_off_timer);
-			}
 
-
-	/*
-			   ets_intr_lock(); // These seem to be OK
-			   for (uint8 pixel = 0; pixel < PIXEL_COUNT; pixel++)
-					ws2812_sendPixel((one_sec_task_state*255)/10,((10-one_sec_task_state)*255)/10,0);
-			   ets_intr_unlock(); // These seem to be OK
-			   ws2812_show();  // latch the colors
-	*/
-
-
-	//		ws2812_sendPixel(0,128,0);
-	//		ws2812_sendPixel(0,0,128);
-
-
-
+		if(sec%10 == 0)	//	Every 10 sec task
+		{
+			every_10_second_task();
+//			INFO("10sec %d\r\n", sec);
+		}
 
 
 
@@ -104,7 +87,7 @@ void ICACHE_FLASH_ATTR circular_timer_proc(void)
 
 			// Check is DST time
 /*
-			if ( ((DS3231_Time[1] == 3)&(mFlag.dst_active=0)) | ((DS3231_Time[0] == 4)&(mFlag.dst_active=1)))
+			if ( ((DS3231_Time[1] == 3)&(sysCfg.dst_active=0)) | ((DS3231_Time[0] == 4)&(sysCfg.dst_active=1)))
 			{
 			struct tm *dt;
 			time_t timestamp = 1522921929;
@@ -128,7 +111,7 @@ void ICACHE_FLASH_ATTR circular_timer_proc(void)
 			os_sprintf(cj, "gmt: %d %02d:%02d:%02d %02d.%02d.%04d, %d",  dt->tm_isdst, dt->tm_hour, dt->tm_min, dt->tm_sec, dt->tm_mday, dt->tm_mon + 1, dt->tm_year + 1900, dt->tm_wday);
 			os_printf(cj);
 			os_printf("\r\n");
-			if(dt->tm_isdst != mFlag.dst_active)
+			if(dt->tm_isdst != sysCfg.dst_active)
 			{
 				if (dt->tm_isdst != 0)
 				{
@@ -141,8 +124,8 @@ void ICACHE_FLASH_ATTR circular_timer_proc(void)
 					dt->tm_hour -= 1;
 
 				}
-				mFlag.dst_active = dt->tm_isdst;
-				AddCFG_Save();
+				sysCfg.dst_active = dt->tm_isdst;
+				SysCFG_Save();
 				mktime(dt);
 
 
@@ -189,7 +172,7 @@ void ICACHE_FLASH_ATTR circular_timer_proc(void)
 		if ((DS1307_Time[0] == 0))
 		{
 
-
+			every_minute_task();
 
 		}
 
@@ -208,18 +191,14 @@ void ICACHE_FLASH_ATTR circular_timer_proc(void)
 void ICACHE_FLASH_ATTR every_second_task()
 {
 
-
-
-//	DS1307_Read();
-
-
-
-
-
-
-
-
-
+	if ( (temporary_fan_off_timer != 0))
+	{
+		temporary_fan_off_timer = temporary_fan_off_timer-1;
+	}
+	if ( (temporary_fan_on_timer != 0))
+	{
+		temporary_fan_on_timer = temporary_fan_on_timer-1;
+	}
 
 
 
@@ -235,15 +214,24 @@ void ICACHE_FLASH_ATTR every_second_task()
 void ICACHE_FLASH_ATTR every_5_second_task ()
 {
 
+
+
+}
+
+void ICACHE_FLASH_ATTR every_10_second_task()
+{
+
 	static uint8_t i;
 	DHT_Sensor_Data data;
-	uint8_t pin;
+//	uint8_t pin;
+
+	char buff[20];
 
 	// One DHT22 sensor
-	pin = sensor.pin;
+//	pin = sensor.pin;
 	if (DHTRead(&sensor, &data))
 	{
-	    char buff[20];
+
 		DHT_temperature = data.temperature;
 		DHT_Humidity = data.humidity;
 //	    INFO("GPIO%d\r\n", pin);
@@ -253,8 +241,28 @@ void ICACHE_FLASH_ATTR every_5_second_task ()
 //	    INFO("Humidity: %s %%\r\n", DHTFloat2String(buff, DHT_Humidity));
 
 	} else {
-	    INFO("Failed to read temperature and humidity sensor on GPIO%d\n", pin);
+//	    INFO("Failed to read temperature and humidity sensor on GPIO%d\n", pin);
 	}
+
+
+}
+
+
+
+void ICACHE_FLASH_ATTR every_minute_task()
+{
+
+	MQTT_Client* client_publish = &mqttClient;
+	if ((client_publish->connState == 15)& (sysCfg.mqtt_task_enabled == 1))
+	{
+		INFO("\r\nSend MQTT\r\n");
+			char tc[80];
+			MQTT_Publish(client_publish, "/IoT_02001/Temp",DHTFloat2String(tc, DHT_temperature), strlen(tc) , 0, 0);
+			MQTT_Publish(client_publish, "/IoT_02001/Hum", DHTFloat2String(tc, DHT_Humidity), strlen(tc) , 0, 0);
+
+	}
+
+
 
 
 

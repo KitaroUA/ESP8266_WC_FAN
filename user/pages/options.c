@@ -43,7 +43,7 @@ int ICACHE_FLASH_ATTR tpl_options(HttpdConnData *connData, char *token, void **a
 	if (os_strcmp(token,"v_tempOn")==0)
 	{
 		os_strcpy(cj, "\"");
-		os_strcat(cj, mFlag.tempOn_time);
+		os_strcat(cj, sysCfg.tempOn_time);
 		os_strcat(cj, "\"");
 		os_sprintf(buff, cj);
 	}

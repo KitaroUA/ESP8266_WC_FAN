@@ -40,49 +40,25 @@
 #include "debug.h"
 
 SYSCFG sysCfg;
-SAVE_FLAG saveFlag;
+//SAVE_FLAG saveFlag;
 
-MY_FLASH_STR mFlag;
+//MY_FLASH_STR sysCfg;
 
 void ICACHE_FLASH_ATTR
 SysCFG_Save()
 {
-	 spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
-	                   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
-
-	if (saveFlag.flag == 0) {
-		spi_flash_erase_sector(CFG_LOCATION + 1);
-		spi_flash_write((CFG_LOCATION + 1) * SPI_FLASH_SEC_SIZE,
+		spi_flash_erase_sector(CFG_LOCATION);
+		spi_flash_write((CFG_LOCATION ) * SPI_FLASH_SEC_SIZE,
 						(uint32 *)&sysCfg, sizeof(SYSCFG));
-		saveFlag.flag = 1;
-		spi_flash_erase_sector(CFG_LOCATION + 3);
-		spi_flash_write((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
-						(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
-	} else {
-		spi_flash_erase_sector(CFG_LOCATION + 0);
-		spi_flash_write((CFG_LOCATION + 0) * SPI_FLASH_SEC_SIZE,
-						(uint32 *)&sysCfg, sizeof(SYSCFG));
-		saveFlag.flag = 0;
-		spi_flash_erase_sector(CFG_LOCATION + 3);
-		spi_flash_write((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
-						(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
-	}
 }
 
 void ICACHE_FLASH_ATTR
-SysCFG_Load(uint8 RLoad)
+SysCFG_Load()
 {
 
 	INFO("\r\nload ...\r\n");
-	spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
-				   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
-	if (saveFlag.flag == 0) {
 		spi_flash_read((CFG_LOCATION + 0) * SPI_FLASH_SEC_SIZE,
 					   (uint32 *)&sysCfg, sizeof(SYSCFG));
-	} else {
-		spi_flash_read((CFG_LOCATION + 1) * SPI_FLASH_SEC_SIZE,
-					   (uint32 *)&sysCfg, sizeof(SYSCFG));
-	}
 
 /*	if((RLoad == 1)){
 		os_memset(&sysCfg, 0x00, sizeof sysCfg);
@@ -96,7 +72,7 @@ SysCFG_Load(uint8 RLoad)
 
 		os_sprintf(sysCfg.device_id, MQTT_CLIENT_ID, system_get_chip_id());
 //		os_sprintf(sysCfg.mqtt_host, "%s", MQTT_HOST);
-		os_sprintf(sysCfg.mqtt_host, "%s", mFlag.mqtt_server);
+		os_sprintf(sysCfg.mqtt_host, "%s", sysCfg.mqtt_server);
 		sysCfg.mqtt_port = MQTT_PORT;
 		os_sprintf(sysCfg.mqtt_user, "%s", MQTT_USER);
 		os_sprintf(sysCfg.mqtt_pass, "%s", MQTT_PASS);
@@ -136,20 +112,6 @@ SysCFG_Load(uint8 RLoad)
  * FLASH part
  */
 
-void ICACHE_FLASH_ATTR AddCFG_Save (void)
-{
-	spi_flash_erase_sector((CFG_LOCATION - 1));
-	spi_flash_write((CFG_LOCATION - 1) * SPI_FLASH_SEC_SIZE,(uint32 *)&mFlag, sizeof(MY_FLASH_STR));
-
-}
-
-
-
-void ICACHE_FLASH_ATTR AddCFG_Load  (void)
-{
-	 spi_flash_read((CFG_LOCATION - 1) * SPI_FLASH_SEC_SIZE,
-	                   (uint32 *)&mFlag, sizeof(MY_FLASH_STR));
-}
 
 
 void ICACHE_FLASH_ATTR Default_CFG(void)
@@ -160,14 +122,15 @@ void ICACHE_FLASH_ATTR Default_CFG(void)
 	os_memset(&sysCfg, 0x00, sizeof sysCfg);
 
 
-	sysCfg.cfg_holder = CFG_HOLDER;
 
 	os_sprintf(sysCfg.sta_ssid, "%s", STA_SSID);
 	os_sprintf(sysCfg.sta_pwd, "%s", STA_PASS);
 	sysCfg.sta_type = STA_TYPE;
 
 	os_sprintf(sysCfg.device_id, MQTT_CLIENT_ID, system_get_chip_id());
-	os_sprintf(sysCfg.mqtt_host, "%s", mFlag.mqtt_server);
+
+	 os_sprintf(sysCfg.mqtt_host, "%s", default_mqtt_host);
+
 	sysCfg.mqtt_port = MQTT_PORT;
 	os_sprintf(sysCfg.mqtt_user, "%s", MQTT_USER);
 	os_sprintf(sysCfg.mqtt_pass, "%s", MQTT_PASS);
@@ -189,27 +152,27 @@ void ICACHE_FLASH_ATTR Default_CFG(void)
 
 	INFO(" default configuration\r\n");
 
-	SysCFG_Save();
 
 
 
 
 
 
-	os_sprintf(mFlag.tempOn_time, "%s", "45");
-	os_sprintf(mFlag.hostname, "ESP_IoT_02001");
-	os_sprintf(mFlag.ntp, "0.ua.pool.ntp.org");
-	mFlag.timezone = 2;
-	mFlag.ntp_flag=1;
-	mFlag.dst_flag=1;
-	mFlag.dst_active=1;
 
-	 os_sprintf(mFlag.mqtt_server,"%s","192.168.104.100");
+	os_sprintf(sysCfg.tempOn_time, "%s", "45");
+	os_sprintf(sysCfg.hostname, "ESP_IoT_02001");
+	os_sprintf(sysCfg.ntp, "0.ua.pool.ntp.org");
+	sysCfg.timezone = 2;
+	sysCfg.ntp_flag=1;
+	sysCfg.dst_flag=1;
+	sysCfg.dst_active=1;
 
-	 mFlag.mqtt_task_enabled = 1;
-	 mFlag.try=0;
 
-	 AddCFG_Save();
+
+	 sysCfg.mqtt_task_enabled = 1;
+	 sysCfg.try=0;
+
+	 SysCFG_Save();
 }
 
 

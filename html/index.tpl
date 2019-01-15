@@ -142,8 +142,8 @@ ESP_IoT_WC_FAN_0201<br>
 
 </tr>
 <tr>
-<img src="bulb-off.png" >
-<img src="bulb-on.png" >
+<img src="movement.png" >
+
 
 
 
@@ -178,6 +178,23 @@ ESP_IoT_WC_FAN_0201<br>
 <td align="left"><font size="5" class="switch_text"><div id="checker_1_text"></div></font></td>
 </tr>
 
+
+<tr>
+<td align="right">
+<div class="onoffswitch2">
+<input type="checkbox" class="onoffswitch1-checkbox" id="slider2" name="slider2" onchange="post_slider()" > 
+	<label class="onoffswitch2-label" for="slider2"> 
+        <span class="onoffswitch2-inner"></span>
+        <span class="onoffswitch2-switch"></span>
+</label>
+</div>
+</td>
+
+<td align="left"><font size="5" class="switch_text"><div id="checker_2_text"></div></font></td>
+</tr>
+
+
+
 <tr><td align="center" colspan="2" class="main"><div id="up_time"></div></td></tr>
 
 <tr>
@@ -188,6 +205,18 @@ ESP_IoT_WC_FAN_0201<br>
 
 <form method="post" action="index.cgi" id="unchecked1" name="unchecked1">
 <input type="hidden" id="slider1" name="slider1" value="0">
+</form>
+</td>
+</tr>
+
+<tr>
+<td>
+<form method="post" action="index.cgi" id="checked2" name="checked2">
+<input type="hidden" id="slider2" name="slider2" value="1">
+</form>
+
+<form method="post" action="index.cgi" id="unchecked2" name="unchecked2">
+<input type="hidden" id="slider2" name="slider2" value="0">
 </form>
 </td>
 </tr>

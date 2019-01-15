@@ -111,8 +111,12 @@ LOCAL uint8_t led_state2=0;
 #define RELAY_MUX D8mux
 #define RELAY_FUNC D8f_g
 #define RELAY_PIN D8pin
-uint16 temporary_light_off_timer;
-uint16 temporary_light_on_timer;
+uint16 temporary_fan_off_timer;
+uint16 temporary_fan_on_timer;
+#define PIR_MUX D7mux
+#define PIR_FUNC D7f_g
+#define PIR_PIN D7pin
+#define DHT_PIN D3pin
 
 
 
@@ -131,6 +135,7 @@ uint16 light_avg;
 
 
 /* for MQTT */
+//#define DEBUG_INFO
 
 #include "ets_sys.h"
 #include "driver/uart.h"
@@ -148,6 +153,7 @@ uint16 light_avg;
 
 #define CFG_HOLDER	0x00FF55A4	/* Change this value to load default configurations */
 #define CFG_LOCATION	0x3C	/* Please don't change or if you know what you doing */
+#define MY_CFG_LOCATION	0x3D	/* Please don't change or if you know what you doing */
 #define CLIENT_SSL_ENABLE
 
 /*DEFAULT CONFIGURATIONS*/
@@ -199,17 +205,12 @@ MQTT_Client mqttClient;
 //#include "driver/encoder.h"
 
 
-#include "pages/temperature_selector.h"
 #include "pages/options.h"
 #include "pages/page_ntp.h"
-#include "pages/set_temp_on.h"
 #include "pages/working_time_selector.h"
 #include "pages/mqtt_settings.h"
 #include "pages/set_ip.h"
 #include "pages/page_index.h"
-#include "pages/slider.h"
-
-
 
 
 

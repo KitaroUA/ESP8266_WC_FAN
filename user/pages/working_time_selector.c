@@ -31,8 +31,8 @@ int ICACHE_FLASH_ATTR tpl_working_time_selector(HttpdConnData *connData, char *t
 
 /*	if (os_strcmp(token, "time_to_on_d")==0)
 	{
-//		os_strcpy(buff,mFlag.on_time);
-		uint16 m16 = atoi (mFlag.on_time);
+//		os_strcpy(buff,sysCfg.on_time);
+		uint16 m16 = atoi (sysCfg.on_time);
 		uint8 h = m16/60;
 		uint8 m = m16 - h*60;
 		os_sprintf(cj,"%02d:%02d", h, m);
@@ -43,8 +43,8 @@ int ICACHE_FLASH_ATTR tpl_working_time_selector(HttpdConnData *connData, char *t
 
 /*	if (os_strcmp(token, "time_to_off_d")==0)
 	{
-//		os_strcpy(buff,mFlag.off_time);
-		uint16 m16 = atoi (mFlag.off_time);
+//		os_strcpy(buff,sysCfg.off_time);
+		uint16 m16 = atoi (sysCfg.off_time);
 		uint8 h = m16/60;
 		uint8 m = m16 - h*60;
 		os_sprintf(cj,"%02d:%02d", h, m);
