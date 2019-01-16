@@ -143,7 +143,7 @@ uint16 light_avg;
 #include "mqtt.h"
 #include "wifi.h"
 #include "config.h"
-#include "debug.h"
+#include "../libesphttpd/include/debug.h"
 #include "gpio.h"
 #include "user_interface.h"
 #include "mem.h"

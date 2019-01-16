@@ -31,9 +31,6 @@ some pictures of cats.
 #include "webpages-espfs.h"
 #include "cgiwebsocket.h"
 
-//==========================================  Debug INFO ================================
-
-
 
 
 #define HI(X) (X>>8)

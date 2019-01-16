@@ -36,8 +36,9 @@
 
 #include "mqtt.h"
 #include "config.h"
+
+#include "../libesphttpd/include/debug.h"
 #include "user_config.h"
-#include "debug.h"
 
 SYSCFG sysCfg;
 //SAVE_FLAG saveFlag;

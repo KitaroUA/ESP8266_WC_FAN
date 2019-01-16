@@ -8,7 +8,7 @@
 #ifndef USER_DEBUG_H_
 #define USER_DEBUG_H_
 
-
+#define DEBUG_INFO
 
 #ifndef INFO
 
