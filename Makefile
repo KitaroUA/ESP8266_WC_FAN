@@ -40,7 +40,7 @@ USE_OPENSDK?=no
 
 #Esptool.py path and port
 ESPTOOL ?= $(SDK_TOOLS)/esptool.exe
-ESPPORT ?= COM3
+ESPPORT ?= COM12
 #ESPDELAY indicates seconds to wait between flashing the two binary images
 ESPDELAY	?= 30
 ESPBAUD		?= 460800

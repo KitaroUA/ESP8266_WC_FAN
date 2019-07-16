@@ -113,10 +113,10 @@ LOCAL uint8_t led_state2=0;
 #define RELAY_PIN D8pin
 uint16 temporary_fan_off_timer;
 uint16 temporary_fan_on_timer;
-#define PIR_MUX D7mux
-#define PIR_FUNC D7f_g
-#define PIR_PIN D7pin
-#define DHT_PIN D3pin
+#define PIR_MUX D3mux
+#define PIR_FUNC D3f_g
+#define PIR_PIN D3pin
+#define DHT_PIN D5pin
 
 
 
@@ -151,9 +151,7 @@ uint16 light_avg;
 
 
 
-#define CFG_HOLDER	0x00FF55A4	/* Change this value to load default configurations */
 #define CFG_LOCATION	0x3C	/* Please don't change or if you know what you doing */
-#define MY_CFG_LOCATION	0x3D	/* Please don't change or if you know what you doing */
 #define CLIENT_SSL_ENABLE
 
 /*DEFAULT CONFIGURATIONS*/
@@ -228,7 +226,9 @@ uint32 	uptime;
 
 
 
+#include "driver/PIR.h"
 
+//#define int_debug
 
 
 #endif

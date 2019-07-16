@@ -459,14 +459,28 @@ LOCAL void ICACHE_FLASH_ATTR dht22_cb(void)
 
 
 
+os_timer_t intr_protect_timer;
+
+
+void intr_rearm();
+
 void ICACHE_FLASH_ATTR intr_callback(unsigned pin, unsigned level)
 {
+#ifdef int_debug
 	INFO("INTERRUPT: GPIO%d = %d\r\n", pin2esp_pin[pin], level);
+#endif
+
 
 	if(pin == esp_pin2pin[PIR_PIN]) // Button
 	{
+#ifdef int_debug
+		INFO("\r\n in: %d\r\n",GPIO_INPUT_GET(PIR_PIN));
+#endif
+//		GPIO_OUTPUT_SET(RELAY_PIN, GPIO_INPUT_GET(PIR_PIN));
+		PIR_movement_set_falg();
 		return;
 	}
+
 
 
 }
@@ -671,21 +685,21 @@ if(work_mode == 0)
 			gpio_type = GPIO_PIN_INTR_POSEDGE;
 			if (set_gpio_mode(gpio_pin,  GPIO_INT, GPIO_PULLUP)) {
 		#ifdef int_debug
-				INFO("GPIO%d set interrupt mode\r\n", pin_num[gpio_pin]);
+				INFO("GPIO%d set interrupt mode\r\n", gpio_pin);
 		#endif
 				if (gpio_intr_init(gpio_pin, gpio_type)) {
 		#ifdef int_debug
-					INFO("GPIO%d enable %s mode\r\n", pin_num[gpio_pin], gpio_type_desc[gpio_type]);
+					INFO("GPIO%d enable %s mode\r\n", gpio_pin, gpio_type_desc[gpio_type]);
 		#endif
 					gpio_intr_attach(intr_callback);
 				} else {
 		#ifdef int_debug
-					INFO("Error: GPIO%d not enable %s mode\r\n", pin_num[gpio_pin], gpio_type_desc[gpio_type]);
+					INFO("Error: GPIO%d not enable %s mode\r\n", gpio_pin, gpio_type_desc[gpio_type]);
 		#endif
 				}
 			} else {
 		#ifdef int_debug
-				INFO("Error: GPIO%d not set interrupt mode\r\n", pin_num[gpio_pin]);
+				INFO("Error: GPIO%d not set interrupt mode\r\n", gpio_pin);
 		#endif
 			}
 
@@ -701,6 +715,8 @@ else
 
 
 	INFO("\r\nSystem started ...\r\n");
+
+	GPIO_OUTPUT_SET(RELAY_PIN, 1);
 
 
 
