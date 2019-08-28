@@ -54,7 +54,7 @@ TARGET		= httpd
 
 # which modules (subdirectories) of the project to include in compiling
 MODULES		= user driver mqtt modules user/pages
-EXTRA_INCDIR	= include libesphttpd/include mqtt/include modules/include
+EXTRA_INCDIR	= include libesphttpd/include mqtt/include modules/include libesphttpd/mkupgimg
 
 # libraries used in this project, mainly provided by the SDK
 LIBS		= c gcc hal phy pp net80211 wpa main lwip crypto ssl
@@ -175,6 +175,7 @@ ESPTOOL_FLASHDEF=--flash_freq $(ESPTOOL_FREQ) --flash_mode $(ESPTOOL_MODE) --fla
 vpath %.c $(SRC_DIR)
 vpath %.S $(SRC_DIR)
 
+
 define compile-objects
 $1/%.o: %.c
 	$(vecho) "CC $$<"
@@ -196,6 +197,7 @@ libesphttpd/Makefile:
 
 libesphttpd: libesphttpd/Makefile
 	$(Q) make -C libesphttpd USE_OPENSDK=$(USE_OPENSDK)
+	
 
 $(APP_AR): libesphttpd $(OBJ)
 	$(vecho) "AR $@"
@@ -205,6 +207,7 @@ checkdirs: $(BUILD_DIR)
 
 $(BUILD_DIR):
 	$(Q) mkdir -p $@
+	
 
 clean:
 	$(Q) make -C libesphttpd clean

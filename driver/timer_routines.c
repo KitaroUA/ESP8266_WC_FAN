@@ -268,7 +268,9 @@ void ICACHE_FLASH_ATTR every_second_task()
 		temporary_fan_on_timer = temporary_fan_on_timer-1;
 	}
 
+    uint16 adc_read = system_adc_read();
 
+    INFO("\n\r ADC %d\n\r", adc_read);
 
 
 

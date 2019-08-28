@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdint.h>
 #include <sys/types.h>
@@ -6,6 +7,28 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <c_types.h>
+#include <io.h>
+
+
+#include <stdint.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "espfs.h"
+#include <string.h>
+
+
+
+
+
+
+
+
 
 //Cygwin e.a. needs O_BINARY. Don't miscompile if it's not set.
 #ifndef O_BINARY

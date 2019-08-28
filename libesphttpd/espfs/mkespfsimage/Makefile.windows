@@ -26,7 +26,8 @@ $(TARGET): $(OBJECTS)
 	$(LD) -o $@ $^ $(LDFLAGS)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -o $@ $^
+#	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -o $@ $^
 
 clean:
 	rm -f $(OBJECTS) $(TARGET)

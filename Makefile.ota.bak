@@ -35,13 +35,10 @@ ESP_FLASH_SIZE_IX:=$(maplookup $(ESP_SPI_FLASH_SIZE_K),,$(FLASH_MAP_CONV))
 
 CFLAGS += -DOTA_TAGNAME=\"$(TAGNAME)\"
 
-
 define genappbin
 $(1): $$(APP_AR)
 	$$(vecho) LD $$@
 	$$(Q) $$(LD) -Llibesphttpd -L$$(SDK_LIBDIR) $(2) $$(LDFLAGS) -Wl,--start-group $$(LIBS) $$(APP_AR) -Wl,--end-group -o $$@
-	@echo "						ggg"
-	
 
 $(3): $(1)
 	$$(vecho) APPGEN $$@
@@ -63,31 +60,41 @@ $(eval $(call genappbin,$(TARGET_OUT_USR2),$$(LD_SCRIPT_USR2),$$(TARGET_BIN_USR2
 .PHONY: ldscript_memspecific.ld
 
 ldscript_memspecific.ld:
-	@echo "11111111========================================"
 	$(vecho) "GEN $@"
 	$(Q) echo "MEMORY { irom0_0_seg : org = 0x40240000, len = "$$(printf "0x%X" $$(($(ESP_SPI_FLASH_SIZE_K)*1024-0x4000)))" }"> ldscript_memspecific.ld
 
 
-libesphttpd/mkupgimg/mkupgimg.exe: libesphttpd/mkupgimg/mkupgimg.c 				#libesphttpd/mkupgimg/
-	@echo "=======11======"
-	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -o $@ $^ 
-	@echo "222222222222222========================================"
+#define makeuser
+#$1: $(APP_AR)
+#	$(vecho) "LD $@"
+#	$(Q) $(LD) -Llibesphttpd -L$(SDK_LIBDIR) $(LD_SCRIPT) $(EXTRA_LD_SCRIPTS) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@ 
+#	$(Q) $(OBJCP) --only-section .text -O binary $2 build/eagle.app.v6.text.bin
+#	$(Q) $(OBJCP) --only-section .data -O binary $2 build/eagle.app.v6.data.bin
+#	$(Q) $(OBJCP) --only-section .rodata -O binary $2 build/eagle.app.v6.rodata.bin
+#	$(Q) $(OBJCP) --only-section .irom0.text -O binary $2 build/eagle.app.v6.irom0text.bin
+#	ls -ls build/eagle*bin
+#	$(Q) COMPILE=gcc PATH=$(XTENSA_TOOLS_ROOT):$(PATH) python $(APPGEN_TOOL) $(USER1_OUT) 2 $(ESP_FLASH_MODE) $(ESP_FLASH_FREQ_DIV) $(ESP_SPI_SIZE)
+#	$(Q) rm -f eagle.app.v6.*.bin
+#	$(Q) mv eagle.app.flash.bin $@
+#	@echo "** user1.bin uses $$(stat -c '%s' $@) bytes of" $(ESP_FLASH_MAX) "available"
+#	$(Q) if [ $$(stat -c '%s' $@) -gt $$(( $(ESP_FLASH_MAX) )) ]; then echo "$@ too big!"; false; fi
+#endef
+
+
+#user1.bin:
+#	$(call makeuser,user1.bin,1)
+
+libesphttpd/mkupgimg/mkupgimg.exe: libesphttpd/mkupgimg/
 #	make -C libesphttpd/mkupgimg/
 
-
-
-
-
-$(FW_BASE): $(TARGET_BIN) libesphttpd/mkupgimg/mkupgimg.exe
+$(FW_BASE): $(TARGET_BIN) libesphttpd/mkupgimg/mkupgimg
 	@echo "==============================================================================================================mkupgimg.c"
 	$(vecho) "GEN $(TARGET_BIN_USR1) $(TARGET_BIN_USR2) $(TAGNAME) $(TARGET_OTAFILE)"
-	$(Q) libesphttpd/mkupgimg/mkupgimg.exe $(TARGET_BIN_USR1) $(TARGET_BIN_USR2) $(TAGNAME) $(TARGET_OTAFILE)
+	$(Q) libesphttpd/mkupgimg/mkupgimg $(TARGET_BIN_USR1) $(TARGET_BIN_USR2) $(TAGNAME) $(TARGET_OTAFILE)
 
 flash: $(TARGET_OUT) $(FW_BASE)
-	@echo "33333333333========================================"
 	$(Q) $(ESPTOOL) $(ESPTOOL_OPTS) write_flash $(ESPTOOL_FLASHDEF) 0x00000 "$(SDK_BASE)/bin/boot_v1.6.bin" 0x1000 $(TARGET_BIN_USR1)
 
 blankflash:
-	@echo "44444444444444========================================"
 	$(Q) $(ESPTOOL) $(ESPTOOL_OPTS) write_flash $(ESPTOOL_FLASHDEF) $(BLANKPOS) $(SDK_BASE)/bin/blank.bin $(INITDATAPOS) $(SDK_BASE)/bin/esp_init_data_default.bin
 
