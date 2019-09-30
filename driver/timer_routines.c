@@ -16,6 +16,33 @@ void every_minute_task();
 
 
 
+uint8 ADC_array_pointer = 0;
+
+uint16 ICACHE_FLASH_ATTR ADC_median_func(uint16 ADC_reading)
+{
+uint16 ADC = 0;
+uint8 i;
+
+ADC_array[ADC_array_pointer] = ADC_reading;
+ADC_array_pointer++;
+
+if (ADC_array_pointer >= ADC_array_size) ADC_array_pointer = 0;
+
+for (i = 0; i < ADC_array_size; i++)
+	{
+		ADC += ADC_array[i];
+	}
+
+	ADC = ADC/ADC_array_size;
+
+
+
+
+
+return ADC;
+}
+
+
 static uint8 ICACHE_FLASH_ATTR bcdToDec(uint8 bcd) {
   return(((bcd / 16) * 10) + (bcd % 16));
 }
@@ -268,9 +295,10 @@ void ICACHE_FLASH_ATTR every_second_task()
 		temporary_fan_on_timer = temporary_fan_on_timer-1;
 	}
 
-    uint16 adc_read = system_adc_read();
+//    uint16 adc_read = system_adc_read();
+	ADC_median = ADC_median_func(system_adc_read());
 
-    INFO("\n\r ADC %d\n\r", adc_read);
+    INFO("\n\r ADC %d\n\r", ADC_median);
 
 
 
@@ -331,7 +359,6 @@ void ICACHE_FLASH_ATTR every_minute_task()
 			MQTT_Publish(client_publish, "/IoT_02001/Hum", DHTFloat2String(tc, DHT_Humidity), strlen(tc) , 0, 0);
 
 	}
-
 
 
 

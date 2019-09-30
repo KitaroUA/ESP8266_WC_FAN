@@ -230,5 +230,13 @@ uint32 	uptime;
 
 //#define int_debug
 
+//############################ ADC
+#define ADC_array_size 5
+uint16 ADC_array[ADC_array_size];
+uint8 ADC_array_pointer;
+uint16 ADC_median;
+uint16 ADC_median_func(uint16 ADC_reading);
+
+
 
 #endif
